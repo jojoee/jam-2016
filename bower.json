@@ -1,0 +1,27 @@
+{
+  "name": "jam-2016",
+  "main": "index.html",
+  "keywords": [
+    "game",
+    "jam",
+    "global game jam",
+    "2016"
+  ],
+  "moduleType": [
+    "node"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "faker": "Faker#~3.0.1",
+    "moment": "~2.11.1",
+    "lodash": "~3.10.1",
+    "phaser": "~2.4.4"
+  }
+}

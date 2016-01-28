@@ -1,0 +1,9 @@
+# dependency
+node_modules/
+bower_components/
+
+# backup
+bk
+bk*
+README*.md
+!README-*.md
