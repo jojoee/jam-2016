@@ -125,6 +125,9 @@ Game.Play.prototype = {
     console.log('shutdown');
   },
   create: function() {
+    // enable plugin
+    game.plugins.screenShake = this.game.plugins.add(Phaser.Plugin.ScreenShake);
+
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.gravity.y = 900;
 
@@ -370,6 +373,7 @@ Game.Play.prototype = {
   },
   playerHit: function(player, mask) {
     this.hitSound.play('', 0, 0.2);
+    game.plugins.screenShake.shake(10);
     
     this.emitter.x = this.thePlayer.x + this.thePlayer.width / 2;
     this.emitter.y = this.thePlayer.y + this.thePlayer.height / 2;
