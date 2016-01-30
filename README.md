@@ -19,7 +19,7 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 - [x] Bug: when dash to the next floor
 - [x] Change warp emitter effect
 - [ ] Implement `fire`
-- [ ] Implement `health`
+- [x] Implement `health`
 - [x] When new game set new `totem` and `mask`
 
 ## Controls
