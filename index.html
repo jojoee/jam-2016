@@ -10,18 +10,39 @@
 <style>
 * { margin: 0; padding: 0; }
 body { background: #fff; }
-canvas { width: 736px; margin: 0 auto; margin-top: 12px; display: block; }
-a, h1 { text-align: center; font-family: monospace; margin-top: 12px; display: block; text-decoration: none; }
+#game-box, .game-wrap, video, canvas { width: 736px; height: 414px; margin: 0 auto; display: block; }
+a, h1 { text-align: center; font-family: monospace; margin-top: 12px; display: block; text-decoration: none; margin-bottom: 12px; }
 a:hover { text-decoration: underline; }
+#game-box { opacity: 0; }
 </style>
 </head>
 <body>
 <a href="https://github.com/jojoee/jam-2016" title="KiKi - The Sacrifice" target="_blank">KiKi - The Sacrifice</a>
-<div id="game-box"></div>
+<div class="game-wrap">
+
+  <video id="intro-vid" controls>
+    <source src="assets/videos/intro-vid.mov">
+    Your browser does not support the <code>video</code> element.
+  </video>
+
+  <div id="game-box"></div>
+</div>
 <script type="text/javascript" src="bower_components/phaser/build/phaser.min.js"></script>
 <script type="text/javascript">window.Phaser || document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/2.4.4/phaser.min.js"><\/script>')</script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 <script type="text/javascript" src="plugins/phaser-debug.min.js"></script>
 <script type="text/javascript" src="plugins/ScreenShake.min.js"></script>
+<script type="text/javascript">
+window.onload = function() {
+  var $introVid = document.getElementById('intro-vid');
+  var $gameBox = document.getElementById('game-box');
+  $introVid.onended = function(e) {
+    console.log('end');
+    $introVid.remove();
+    $gameBox.style.opacity = 1;
+  };
+};
+</script>
 <!--
 <script src="plugins/phaser-state-transition-plugin.min.js"></script>
 -->
