@@ -562,6 +562,7 @@ Game.Play.prototype = {
     this.updateScore(SCORE + 1);
 
     if (CURRENT_FLOOR === N_FLOOR - 1) {
+      this.regenerateTotem();
       this.warpToFirstFloor();
 
     } else {
@@ -754,6 +755,7 @@ Game.Play.prototype = {
     CURRENT_FLOOR++;
     if (CURRENT_FLOOR === N_FLOOR) {
       CURRENT_FLOOR = 0;
+      this.regenerateTotem();
     }
 
     this.goToFloor();
