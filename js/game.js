@@ -267,6 +267,9 @@ Game.Play.prototype = {
   updateLife: function(num) {
     if (num > 6) {
       num = 6;
+
+    } else if (num = 0) {
+      num = 0;
     }
 
     LIFE = num;
@@ -840,7 +843,6 @@ Game.Play.prototype = {
     this.updateLife(LIFE - 1);
 
     if (LIFE <= 0) {
-      LIFE == 0; // hacky, sometime we can hit two totems in the sametime
       this.gameOver();
 
     } else {
