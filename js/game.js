@@ -14,11 +14,6 @@ var LOADING_SCREEN_COLOR;
 var TITLE_COLOR;
 var SUBTITLE_COLOR;
 
-// back theme
-LOADING_SCREEN_COLOR = '#333';
-TITLE_COLOR = '#fff';
-SUBTITLE_COLOR = '#E0E0E0';
-
 // white theme (white bg, font back)
 LOADING_SCREEN_COLOR = '#eee';
 TITLE_COLOR = '#545454';
@@ -28,15 +23,9 @@ var GAME_NAME = 'KiKi - The Sacrifice';
 var SUBTITLE_TEXT = 'by - JAM 2016';
 
 var PLAYER_SPRITE_NAME = 'square';
-var TOTEM_SPRITE_NAME;
-// TOTEM_SPRITE_NAME = 'spike';
 
 var PLAYER_SPRITE_WIDTH;
 var PLAYER_SPRITE_HEIGHT;
-
-// white ninja
-// PLAYER_SPRITE_WIDTH = 56;
-// PLAYER_SPRITE_HEIGHT = 40;
 
 // forest guy / new guy
 PLAYER_SPRITE_WIDTH = 40;
@@ -130,7 +119,6 @@ Game.Load.prototype = {
     this.setPreloadingText();
 
     // load all asets
-    // game.load.image(PLAYER_SPRITE_NAME, 'assets/images/square.png');
     game.load.spritesheet(PLAYER_SPRITE_NAME, 'assets/images/player.png', PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
 
     game.load.image('totem1', 'assets/images/totem1.png');
@@ -141,17 +129,12 @@ Game.Load.prototype = {
     game.load.image('warpparticle', 'assets/images/warp-particle.png');
     game.load.image('maskparticle', 'assets/images/mask-particle.png');
 
-    // game.load.image('background', 'assets/images/background-texture.png');
     game.load.image('background', 'assets/images/bg.jpg');
-    // game.load.image('floor', 'assets/images/floor.png');
     game.load.image('floor', 'assets/images/floor.jpg');
     game.load.image('startbutton', 'assets/images/start-button.png');
     game.load.image('pausebutton', 'assets/images/pause-button.png');
     game.load.image('overpanel', 'assets/images/overpanel.png');
 
-    // game.load.image('dashmask', 'assets/images/mask-dash.png');
-    // game.load.image('digmask', 'assets/images/mask-dig.png');
-    // game.load.image('firemask', 'assets/images/mask-fire.png');
     game.load.spritesheet('dashmask', 'assets/images/mask-dash.png', 20, 20);
     game.load.spritesheet('digmask', 'assets/images/mask-dig.png', 20, 20);
     game.load.spritesheet('firemask', 'assets/images/mask-fire.png', 20, 20);
@@ -219,7 +202,6 @@ Game.Play.prototype = {
       var maskXPos = Math.floor(Math.random() * 400) + 120;
       var maskYPos = FLOOR_Y_POS[floorIdx] - 2 * game.cache.getImage(maskSpriteName).height;
 
-      // var mask = game.add.sprite(maskXPos, maskYPos, maskSpriteName);
       var mask = game.add.sprite(maskXPos, maskYPos, maskSpriteName);
       var spin = mask.animations.add('spin');
       mask.animations.play('spin', 14, true);
@@ -273,11 +255,9 @@ Game.Play.prototype = {
   },
   setPlayer: function() {
     // player
-    this.xSpeed = 200; // pixels / frame
+    this.xSpeed = 200;
     var startedPlayerXPos = 0;
-
     var startedPlayerYPos = FLOOR_Y_POS[CURRENT_FLOOR] - game.cache.getImage(PLAYER_SPRITE_NAME).height / 2;
-    // this.thePlayer = game.add.sprite(startedPlayerXPos, startedPlayerYPos, PLAYER_SPRITE_NAME);
 
     this.thePlayer = game.add.sprite(PLAYER_SPRITE_WIDTH, startedPlayerYPos, PLAYER_SPRITE_NAME);
     this.thePlayer.scale.setTo(0.5, 0.5);
@@ -393,7 +373,9 @@ Game.Play.prototype = {
     for (var i = 0; i < this.totemAmount; i += 1) {
       var floorIdx = this.randomFloor();
       var xPos = Math.floor(Math.random() * 400) + 120;
-      var yPos = FLOOR_Y_POS[floorIdx] - game.cache.getImage(TOTEM_SPRITE_NAME).height / 2;
+      var yPos;
+      yPos = FLOOR_Y_POS[floorIdx] - game.cache.getImage('totem1').height / 2;
+      yPos = FLOOR_Y_POS[floorIdx];
 
       var totemIdx = randBetween(1, 3);
       var theTotem = game.add.sprite(xPos, yPos, 'totem' + totemIdx);
@@ -430,17 +412,10 @@ Game.Play.prototype = {
   },
   setBg: function() {
     game.background = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'background');
-    // game.background.autoScroll(-60, 0);
   },
   setInput: function() {
-    // cursors
-    // this.cursors = game.input.keyboard.createCursorKeys();
-    
     // left-click
     game.input.onDown.add(this.jump, this)
-
-    // space bar
-    // this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   },
   setDieEmitter: function() {
     var nDieEmitter = 30;
@@ -507,21 +482,12 @@ Game.Play.prototype = {
   },
   render: function() {
     if (IS_DEBUG) {
-      // game.debug.spriteInfo(this.thePlayer, 8, 16);
-      // game.debug.bodyInfo(this.thePlayer, 8, 106);
-      // game.debug.body(this.thePlayer);
+      game.debug.spriteInfo(this.thePlayer, 8, 16);
+      game.debug.bodyInfo(this.thePlayer, 8, 106);
+      game.debug.body(this.thePlayer);
 
       DEBUG_XPOS = STARTED_DEBUG_XPOS;
       DEBUG_YPOS = STARTED_DEBUG_YPOS;
-
-      this.echoDebug('dieEmitter living', this.dieEmitter.countLiving());
-      this.echoDebug('dieEmitter dead', this.dieEmitter.countDead());
-
-      this.echoDebug('warpEmitter living', this.warpEmitter.countLiving());
-      this.echoDebug('warpEmitter dead', this.warpEmitter.countDead());
-
-      this.echoDebug('maskEmitter living', this.maskEmitter.countLiving());
-      this.echoDebug('maskEmitter dead', this.maskEmitter.countDead());
     }
   },
   randomFloor: function() {
