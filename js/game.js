@@ -374,8 +374,8 @@ Game.Play.prototype = {
       var floorIdx = this.randomFloor();
       var xPos = Math.floor(Math.random() * 400) + 120;
       var yPos;
-      yPos = FLOOR_Y_POS[floorIdx] - game.cache.getImage('totem1').height / 2;
-      yPos = FLOOR_Y_POS[floorIdx];
+      var mNumber = 16;
+      yPos = FLOOR_Y_POS[floorIdx] - mNumber;
 
       var totemIdx = randBetween(1, 3);
       var theTotem = game.add.sprite(xPos, yPos, 'totem' + totemIdx);
