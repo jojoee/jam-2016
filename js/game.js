@@ -42,6 +42,7 @@ var STARTED_DEBUG_XPOS = 400;
 var STARTED_DEBUG_YPOS = 8;
 
 var LIFE = 3;
+var MAX_LIFE = 3;
 var SCORE = 0;
 var BEST_SCORE = 0;
 
@@ -265,8 +266,8 @@ Game.Play.prototype = {
     this.bestScoreLabel.setText(text);
   },
   updateLife: function(num) {
-    if (num > 6) {
-      num = 6;
+    if (num > MAX_LIFE) {
+      num = MAX_LIFE;
 
     } else if (num = 0) {
       num = 0;
