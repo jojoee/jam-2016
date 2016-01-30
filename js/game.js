@@ -379,6 +379,11 @@ Game.Play.prototype = {
     this.killAllDigMasks();
     this.generateDigMask();
   },
+  regenerateAllMasks: function() {
+    this.regenerateDashMask();
+    this.regenerateFireMask();
+    this.regenerateDigMask();
+  },
   setLifeItem: function() {
     this.lifeItemGroup;
     this.lifeItemAmount = 1;
@@ -843,10 +848,7 @@ Game.Play.prototype = {
     this.updateLife(3);
     this.updateScore(0);
 
-    this.regenerateDashMask();
-    this.regenerateFireMask();
-    this.regenerateDigMask();
-
+    this.regenerateAllMasks();
     this.regenerateTotem();
     this.regenerateLifeItem();
 
@@ -883,6 +885,13 @@ Game.Play.prototype = {
       }
 
       this.fadeAllEmitters();
+
+      var countLivingMask = 0;
+      countLivingMask += this.dashMaskGroup.countLiving();
+      countLivingMask += this.digMaskGroup.countLiving();
+      if (countLivingMask == 0) {
+        this.regenerateAllMasks();
+      }
 
       game.physics.arcade.overlap(this.thePlayer, this.totemGroup, this.hitTotem, null, this);
 
