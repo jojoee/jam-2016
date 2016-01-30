@@ -52,7 +52,7 @@ var DEBUG_YPOS;
 var STARTED_DEBUG_XPOS = 400;
 var STARTED_DEBUG_YPOS = 8;
 
-var LIFE = 1;
+var LIFE = 3;
 var SCORE = 0;
 var BEST_SCORE = 0;
 
