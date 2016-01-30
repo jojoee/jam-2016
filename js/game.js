@@ -265,6 +265,10 @@ Game.Play.prototype = {
     this.bestScoreLabel.setText(text);
   },
   updateLife: function(num) {
+    if (num > 6) {
+      num = 6;
+    }
+
     LIFE = num;
     var text = 'LIFE: ' + LIFE;
     this.lifeLabel.setText(text);
