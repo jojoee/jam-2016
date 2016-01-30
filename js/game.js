@@ -141,6 +141,7 @@ Game.Load.prototype = {
     game.load.image('pausebutton', 'assets/images/pause-button.png');
     game.load.image('restartbutton', 'assets/images/restart-button.png');
     game.load.image('overpanel', 'assets/images/overpanel.png');
+    game.load.image('howto', 'assets/images/howto.png');
 
     game.load.spritesheet('dashmask', 'assets/images/mask-dash.png', 20, 20);
     game.load.spritesheet('digmask', 'assets/images/mask-dig.png', 20, 20);
@@ -196,6 +197,32 @@ Game.Menu.prototype = {
     this.setStartButton();
   },
   startClick: function() {
+    game.state.start('Howto');
+  }
+};
+
+/*================================================================ HOWTO
+*/
+
+Game.Howto = function(game) {};
+Game.Howto.prototype = {
+  setPreloadingBg: function() {
+    game.stage.backgroundColor = LOADING_SCREEN_COLOR;
+  },
+  create: function() {
+    this.setPreloadingBg();
+
+    var mNumber = 240;
+    var startedX = WIDTH / 2;
+    var startedY = HEIGHT + mNumber;
+    this.howtoPanel = game.add.sprite(startedX, startedY, 'howto');
+    this.howtoPanel.anchor.setTo(0.5, 0.5);
+    this.howtoPanelTween = game.add.tween(this.howtoPanel);
+    this.howtoPanelTween.to({ y: HEIGHT / 2, alpha: 1 }, 1000, Phaser.Easing.Bounce.Out).start();
+
+    game.input.onDown.add(this.goToPlayState, this)
+  },
+  goToPlayState: function() {
     game.state.start('Play');
   }
 };
@@ -960,6 +987,7 @@ var game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'game-box');
 game.state.add('Boot', Game.Boot);
 game.state.add('Load', Game.Load);
 game.state.add('Menu', Game.Menu);
+game.state.add('Howto', Game.Howto);
 game.state.add('Play', Game.Play);
 game.state.add('Over', Game.Over);
 
