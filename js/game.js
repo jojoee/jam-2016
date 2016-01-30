@@ -226,22 +226,24 @@ Game.Play.prototype = {
     }
   },
   pauseGame: function() {
-    game.paused = true;
-    
-    var pauseText = 'GAME PAUSED';
-    var pauseStyle = { font: '50px Arial', fill: '#fff' };
+    if (!IS_OVER) {
+      game.paused = true;
+      
+      var pauseText = 'GAME PAUSED';
+      var pauseStyle = { font: '50px Arial', fill: '#fff' };
 
-    var pauseLabel = this.add.text(
-      WIDTH / 2,
-      HEIGHT / 2,
-      pauseText,
-      pauseStyle);
-    pauseLabel.anchor.setTo(0.5, 1);
+      var pauseLabel = this.add.text(
+        WIDTH / 2,
+        HEIGHT / 2,
+        pauseText,
+        pauseStyle);
+      pauseLabel.anchor.setTo(0.5, 1);
 
-    this.input.onDown.add(function() {
-      pauseLabel.destroy();
-      game.paused = false;
-    }, this);
+      this.input.onDown.add(function() {
+        pauseLabel.destroy();
+        game.paused = false;
+      }, this);
+    }
   },
   updateScore: function(num) {
     SCORE = num;
