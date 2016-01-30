@@ -139,10 +139,13 @@ Game.Load.prototype = {
     game.load.spritesheet('digmask', 'assets/images/mask-dig.png', 20, 20);
     game.load.spritesheet('firemask', 'assets/images/mask-fire.png', 20, 20);
 
+    game.load.spritesheet('lifeitem', 'assets/images/item-life.png', 20, 20);
+
     game.load.audio('hit', 'assets/sounds/hit.wav');
     game.load.audio('jump', 'assets/sounds/jump.wav');
     game.load.audio('music', 'assets/sounds/music.wav');
-    game.load.audio('bonus', 'assets/sounds/bonus.wav');    
+    game.load.audio('bonus', 'assets/sounds/bonus.wav');
+    game.load.audio('item', 'assets/sounds/item.mp3');
   },
   create: function() {
     game.state.start('Menu');
@@ -211,6 +214,24 @@ Game.Play.prototype = {
 
       game.physics.arcade.enable(mask);
       mask.body.allowGravity = false;
+    }
+  },
+  drawItem: function(itemNameGroup, itemSpriteName, n) {
+    // quite duplicate with drawMask()
+    for (var i = 0; i < n; i += 1) {
+      var floorIdx = this.randomFloor();
+      var xPos = Math.floor(Math.random() * 400) + 120;
+      var yPos = FLOOR_Y_POS[floorIdx] - 2 * game.cache.getImage(itemSpriteName).height;
+
+      var item = game.add.sprite(xPos, yPos, itemSpriteName);
+      var spin = item.animations.add('spin');
+      item.animations.play('spin', 6, true);
+
+      item.anchor.setTo(0.5, 0.5);
+      itemNameGroup.add(item);
+
+      game.physics.arcade.enable(item);
+      item.body.allowGravity = false;
     }
   },
   pauseGame: function() {
@@ -358,6 +379,25 @@ Game.Play.prototype = {
     this.killAllDigMasks();
     this.generateDigMask();
   },
+  setLifeItem: function() {
+    this.lifeItemGroup;
+    this.lifeItemAmount = 1;
+    this.lifeItemGroup = game.add.group();
+    this.generateLifeItem();
+  },
+  killAllLifeItems: function() {
+    this.lifeItemGroup.forEach(function(item) {
+      item.kill();
+    });
+  },
+  generateLifeItem: function() {
+    this.drawItem(this.lifeItemGroup, 'lifeitem', this.lifeItemAmount);
+    game.physics.arcade.enable(this.lifeItemGroup);
+  },
+  regenerateLifeItem: function() {
+    this.killAllLifeItems();
+    this.generateLifeItem();
+  },
   setTotem: function() {
     this.totemGroup;
     this.totemAmount = 8;
@@ -445,6 +485,8 @@ Game.Play.prototype = {
     this.hitSound = game.add.audio('hit');
     this.jumpSound = game.add.audio('jump');
     this.bonusSound = game.add.audio('bonus');
+    this.itemSound = game.add.audio('item');
+
     game.add.audio('music').play('', 0, 0.1, true);
   },
   create: function() {
@@ -461,6 +503,8 @@ Game.Play.prototype = {
     this.setDashMask();
     this.setFireMask();
     this.setDigMask();
+
+    this.setLifeItem();
       
     this.setPauseButton();
     this.setInput();
@@ -529,6 +573,7 @@ Game.Play.prototype = {
 
     if (CURRENT_FLOOR === N_FLOOR - 1) {
       this.regenerateTotem();
+      this.regenerateLifeItem();
       this.warpToFirstFloor();
 
     } else {
@@ -639,6 +684,11 @@ Game.Play.prototype = {
     mask.kill();
     this.updateMask('dig');
   },
+  getLifeItem: function(player, item) {
+    this.itemSound.play('', 0, 0.1);
+    item.kill();
+    this.updateLife(LIFE + 1);
+  },
   setGameOverPanel: function() {
     var mNumber = 240;
     var startedX = WIDTH / 2;
@@ -721,7 +771,11 @@ Game.Play.prototype = {
     CURRENT_FLOOR++;
     if (CURRENT_FLOOR === N_FLOOR) {
       CURRENT_FLOOR = 0;
+
+      // regenerate item / mask
+      // when moving from last floor to the first floor
       this.regenerateTotem();
+      this.regenerateLifeItem();
     }
 
     this.goToFloor();
@@ -794,8 +848,13 @@ Game.Play.prototype = {
     this.regenerateDigMask();
 
     this.regenerateTotem();
+    this.regenerateLifeItem();
+
     this.goToFirstFloor();
 
+    // hacky
+    // set game over panel and hide it
+    // and we will display it later (when game over)
     this.setGameOverPanel();
   },
   getStartedPlayerYPos: function() {
@@ -826,9 +885,12 @@ Game.Play.prototype = {
       this.fadeAllEmitters();
 
       game.physics.arcade.overlap(this.thePlayer, this.totemGroup, this.hitTotem, null, this);
+
       game.physics.arcade.overlap(this.thePlayer, this.dashMaskGroup, this.getDashMask, null, this);
       game.physics.arcade.overlap(this.thePlayer, this.fireMaskGroup, this.getFireMask, null, this);
       game.physics.arcade.overlap(this.thePlayer, this.digMaskGroup, this.getDigMask, null, this);
+
+      game.physics.arcade.overlap(this.thePlayer, this.lifeItemGroup, this.getLifeItem, null, this);
     }
   }
 };
