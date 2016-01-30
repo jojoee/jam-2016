@@ -715,7 +715,7 @@ Game.Play.prototype = {
     var gameOverText = 'SCORE: ' + SCORE;
     var gameOverStyle = {
       font: '50px Arial',
-      fill: '#fff',
+      fill: '#545454',
       wordWrap: true,
       wordWrapWidth: this.gameOverPanel.width,
       align: 'center'
