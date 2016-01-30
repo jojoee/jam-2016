@@ -76,6 +76,8 @@ Game.Boot.prototype = {
     game.stage.backgroundColor = LOADING_SCREEN_COLOR;
     game.load.image('loading', 'assets/images/loading.png');
     game.load.image('loadingborder', 'assets/images/loading-border.png');
+
+    // game.load.video('introvid', 'assets/videos/intro-vid.mp4');
   },
   create: function() {
     game.state.start('Load');
@@ -117,10 +119,23 @@ Game.Load.prototype = {
     preloading.x -= preloading.width / 2;
     game.load.setPreloadSprite(preloading);
   },
+  // afterVidRunFinished: function() {
+  //   var waitTime = 6000;
+  //   game.time.events.add(waitTime, this.goToMenuScreen, this);
+  // },
+  // goToMenuScreen: function() {
+  //   game.state.start('Menu');
+  // },
   preload: function() {
     this.setPreloadingBg();
     this.setPreloadingImage();
     this.setPreloadingText();
+
+    // intro vid
+    // var introVid = game.add.video('introvid');
+    // introVid.onPlay.addOnce(this.afterVidRunFinished, this);
+    // var introVidSprite = introVid.addToWorld(game.world.centerX, game.world.centerY, 0.5, 0.5);
+    // introVid.play();
 
     // load all asets
     game.load.spritesheet(PLAYER_SPRITE_NAME, 'assets/images/player.png', PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
