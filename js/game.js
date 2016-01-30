@@ -133,7 +133,6 @@ Game.Load.prototype = {
     // game.load.image(PLAYER_SPRITE_NAME, 'assets/images/square.png');
     game.load.spritesheet(PLAYER_SPRITE_NAME, 'assets/images/player.png', PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
 
-    // game.load.image(TOTEM_SPRITE_NAME, 'assets/images/spike.png');
     game.load.image('totem1', 'assets/images/totem1.png');
     game.load.image('totem2', 'assets/images/totem2.png');
     game.load.image('totem3', 'assets/images/totem3.png');
@@ -150,9 +149,12 @@ Game.Load.prototype = {
     game.load.image('pausebutton', 'assets/images/pause-button.png');
     game.load.image('overpanel', 'assets/images/overpanel.png');
 
-    game.load.image('dashmask', 'assets/images/mask-dash.png');
-    game.load.image('firemask', 'assets/images/mask-fire.png');
-    game.load.image('digmask', 'assets/images/mask-dig.png');
+    // game.load.image('dashmask', 'assets/images/mask-dash.png');
+    // game.load.image('digmask', 'assets/images/mask-dig.png');
+    // game.load.image('firemask', 'assets/images/mask-fire.png');
+    game.load.spritesheet('dashmask', 'assets/images/mask-dash.png', 20, 20);
+    game.load.spritesheet('digmask', 'assets/images/mask-dig.png', 20, 20);
+    game.load.spritesheet('firemask', 'assets/images/mask-fire.png', 20, 20);
 
     game.load.audio('hit', 'assets/sounds/hit.wav');
     game.load.audio('jump', 'assets/sounds/jump.wav');
@@ -217,7 +219,11 @@ Game.Play.prototype = {
       var maskXPos = Math.floor(Math.random() * 400) + 120;
       var maskYPos = FLOOR_Y_POS[floorIdx] - 2 * game.cache.getImage(maskSpriteName).height;
 
+      // var mask = game.add.sprite(maskXPos, maskYPos, maskSpriteName);
       var mask = game.add.sprite(maskXPos, maskYPos, maskSpriteName);
+      var spin = mask.animations.add('spin');
+      mask.animations.play('spin', 14, true);
+
       mask.anchor.setTo(0.5, 0.5);
       maskNameGroup.add(mask);
 
