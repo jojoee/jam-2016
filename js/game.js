@@ -269,7 +269,7 @@ Game.Play.prototype = {
     if (num > MAX_LIFE) {
       num = MAX_LIFE;
 
-    } else if (num = 0) {
+    } else if (num == 0) {
       num = 0;
     }
 
