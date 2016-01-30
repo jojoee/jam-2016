@@ -38,7 +38,7 @@ var PLAYER_SPRITE_HEIGHT;
 // PLAYER_SPRITE_WIDTH = 56;
 // PLAYER_SPRITE_HEIGHT = 40;
 
-// forest guy
+// forest guy / new guy
 PLAYER_SPRITE_WIDTH = 40;
 PLAYER_SPRITE_HEIGHT = 40;
 
@@ -52,7 +52,7 @@ var DEBUG_YPOS;
 var STARTED_DEBUG_XPOS = 400;
 var STARTED_DEBUG_YPOS = 8;
 
-var LIFE = 3;
+var LIFE = 1;
 var SCORE = 0;
 var BEST_SCORE = 0;
 
@@ -148,6 +148,7 @@ Game.Load.prototype = {
     game.load.image('floor', 'assets/images/floor.jpg');
     game.load.image('startbutton', 'assets/images/start-button.png');
     game.load.image('pausebutton', 'assets/images/pause-button.png');
+    game.load.image('overpanel', 'assets/images/overpanel.png');
 
     game.load.image('dashmask', 'assets/images/mask-dash.png');
     game.load.image('firemask', 'assets/images/mask-fire.png');
@@ -303,16 +304,6 @@ Game.Play.prototype = {
     this.lifeLabel = this.add.text(16, 48 + 8, lifeText, lifeStyle);
     this.lifeLabel.anchor.setTo(0, 0);
   },
-  setGameOverLabel: function() {
-    var gameOverText = '';
-    var gameOverStyle = { font: '50px Arial', fill: '#fff' };
-    this.gameOverLabel = this.add.text(WIDTH / 2 - 30, HEIGHT / 2, gameOverText, gameOverStyle);
-    this.gameOverLabel.anchor.setTo(0.5, 0.5);
-  },
-  showGameOverText: function() {
-    var gameOverText = "GAME OVER\nSCORE: " + SCORE;
-    this.gameOverLabel.setText(gameOverText);
-  },
   clearGameOverLabel: function() {
     this.gameOverLabel.setText('');
   },
@@ -381,7 +372,7 @@ Game.Play.prototype = {
   },
   setTotem: function() {
     this.totemGroup;
-    this.totemAmount = 4;
+    this.totemAmount = 8;
     this.totemGroup = game.add.group();
     this.generateTotem();
   },
@@ -500,9 +491,11 @@ Game.Play.prototype = {
     this.setScoreLabel();
     this.setBestScoreLabel();
     this.setLifeLabel();
-    this.setGameOverLabel();
     this.currentMask = '';
     this.setMaskLabel();
+
+    // hidden
+    this.setGameOverPanel();
   },
   render: function() {
     if (IS_DEBUG) {
@@ -584,10 +577,7 @@ Game.Play.prototype = {
   },
   jump: function(mouse) {
     if (!this.isInPauseButtonArea(mouse.game.input.x, mouse.game.input.y)) {
-      if (IS_OVER) {
-        this.newGame();
-
-      } else {
+      if (!IS_OVER) {
         // jump
         if (this.thePlayer.body.touching.down) {
           this.jumpSound.play('', 0, 0.1);
@@ -674,14 +664,53 @@ Game.Play.prototype = {
     mask.kill();
     this.updateMask('dig');
   },
+  setGameOverPanel: function() {
+    var mNumber = 240;
+    var startedX = WIDTH / 2;
+    var startedY = HEIGHT + mNumber;
+
+    // set
+    this.gameOverPanel = game.add.sprite(startedX, startedY, 'overpanel');
+    this.gameOverPanel.anchor.setTo(0.5, 0.5);
+    this.gameOverPanelTween = game.add.tween(this.gameOverPanel);
+
+    var gameOverText = 'SCORE: ' + SCORE;
+    var gameOverStyle = {
+      font: '50px Arial',
+      fill: '#fff',
+      wordWrap: true,
+      wordWrapWidth: this.gameOverPanel.width,
+      align: 'center'
+    };
+    this.gameOverLabel = this.add.text(startedX, startedY, gameOverText, gameOverStyle);
+    this.gameOverLabel.anchor.setTo(0.5, 0.5);
+    this.gameOverLabelTween = game.add.tween(this.gameOverLabel);
+
+    this.startButton = game.add.button(startedX, startedY, 'startbutton', this.newGame, this);
+    this.startButton.anchor.setTo(0.5, 0.5);
+    this.startButtonTween = game.add.tween(this.startButton);
+  },
+  fadeInGameOverPanel: function() {
+    this.gameOverPanelTween.to({ y: HEIGHT / 2, alpha: 1 }, 1000, Phaser.Easing.Bounce.Out).start();
+    this.gameOverLabelTween.to({ y: HEIGHT / 2 - 30, alpha: 1 }, 1000, Phaser.Easing.Bounce.Out).start();
+    this.startButtonTween.to({ y: HEIGHT / 2 + 80, alpha: 1 }, 1000, Phaser.Easing.Bounce.Out).start();
+  },
+  fadeOutGameOverPanel: function() {
+    var mNumber = 240;
+    var yPos = HEIGHT + mNumber;
+
+    this.gameOverLabel.kill();
+    this.gameOverPanel.kill();
+    this.startButton.kill();
+  },
   gameOver: function() {
     IS_OVER = true;
 
     if (SCORE > BEST_SCORE) {
       this.updateBestScore(SCORE);
     }
-
-    this.showGameOverText();
+    
+    this.fadeInGameOverPanel();
   },
   goToFloor: function() {
     var xSpeed;
@@ -765,7 +794,8 @@ Game.Play.prototype = {
     player.kill();
     this.updateLife(LIFE - 1);
 
-    if (LIFE === 0) {
+    if (LIFE <= 0) {
+      LIFE == 0; // hacky, sometime we can hit two totems in the sametime
       this.gameOver();
 
     } else {
@@ -773,6 +803,8 @@ Game.Play.prototype = {
     }
   },
   newGame: function() {
+    this.fadeOutGameOverPanel();
+
     IS_OVER = false;
     this.clearGameOverLabel();
     this.thePlayer.kill(); // duplicate kill
@@ -786,8 +818,9 @@ Game.Play.prototype = {
     this.regenerateDigMask();
 
     this.regenerateTotem();
-
     this.goToFirstFloor();
+
+    this.setGameOverPanel();
   },
   getStartedPlayerYPos: function() {
     return FLOOR_Y_POS[CURRENT_FLOOR] - PLAYER_SPRITE_HEIGHT / 2;
