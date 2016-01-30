@@ -1,5 +1,5 @@
 # jam-2016
-Our project on Global Game Jam 2016 (29-31 Jan 2016)
+KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 
 ## Our Team
 + J - [Jirashy G. Kongjinda](https://www.facebook.com/LAWGGEVOL) / [Joe Nathachai Thongniran](https://www.facebook.com/joenathachai.thongniran)
@@ -9,6 +9,9 @@ Our project on Global Game Jam 2016 (29-31 Jan 2016)
 + [Sahapat Tong-on](https://www.facebook.com/sahapat.tongon)
 
 ## Game Description
+
+## Rules
+- regenerate `totem` when we going form last floor to the first floor
 
 ## TODO
 - [x] Bug: when the player was hit then it go to next floor
