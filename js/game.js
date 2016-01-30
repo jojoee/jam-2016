@@ -720,6 +720,11 @@ Game.Play.prototype = {
     this.startButton.anchor.setTo(0.5, 0.5);
     this.startButtonTween = game.add.tween(this.startButton);
   },
+  updateGameOverLabel: function() {
+    // hacky
+    var text = 'SCORE: ' + SCORE;
+    this.gameOverLabel.setText(text);
+  },
   fadeInGameOverPanel: function() {
     this.gameOverPanelTween.to({ y: HEIGHT / 2, alpha: 1 }, 1000, Phaser.Easing.Bounce.Out).start();
     this.gameOverLabelTween.to({ y: HEIGHT / 2 - 30, alpha: 1 }, 1000, Phaser.Easing.Bounce.Out).start();
@@ -740,6 +745,7 @@ Game.Play.prototype = {
       this.updateBestScore(SCORE);
     }
     
+    this.updateGameOverLabel(); // hacky
     this.fadeInGameOverPanel();
   },
   goToFloor: function() {
