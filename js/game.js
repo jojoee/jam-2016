@@ -134,6 +134,7 @@ Game.Load.prototype = {
     game.load.image('floor', 'assets/images/floor.jpg');
     game.load.image('startbutton', 'assets/images/start-button.png');
     game.load.image('pausebutton', 'assets/images/pause-button.png');
+    game.load.image('restartbutton', 'assets/images/restart-button.png');
     game.load.image('overpanel', 'assets/images/overpanel.png');
 
     game.load.spritesheet('dashmask', 'assets/images/mask-dash.png', 20, 20);
@@ -255,6 +256,9 @@ Game.Play.prototype = {
       }, this);
     }
   },
+  restartGame: function() {
+    this.newGame();
+  },
   updateScore: function(num) {
     SCORE = num;
     var text = 'SCORE: ' + SCORE;
@@ -300,8 +304,18 @@ Game.Play.prototype = {
     this.thePlayer.body.velocity.x = this.xSpeed
   },
   setPauseButton: function() {
-    this.pauseButton = game.add.button(WIDTH - 40, 40, 'pausebutton', this.pauseGame, this);
+    var xPos = WIDTH - 40;
+    var yPos = 40;
+
+    this.pauseButton = game.add.button(xPos, yPos, 'pausebutton', this.pauseGame, this);
     this.pauseButton.anchor.setTo(0.5, 0.5);
+  },
+  setRestartButton: function() {
+    var xPos = WIDTH - 100;
+    var yPos = 40;
+
+    this.restartButton = game.add.button(xPos, yPos, 'restartbutton', this.restartGame, this);
+    this.restartButton.anchor.setTo(0.5, 0.5);
   },
   setScoreLabel: function() {
     var scoreText = 'SCORE: ' + SCORE;
@@ -520,6 +534,7 @@ Game.Play.prototype = {
     this.setLifeItem();
       
     this.setPauseButton();
+    this.setRestartButton();
     this.setInput();
 
     this.setDieEmitter();
@@ -597,6 +612,19 @@ Game.Play.prototype = {
     this.fadeMaskEmitter();
     this.resetCurrentMask();
   },
+  isInButtonsArea: function(x, y) {
+    // hacky
+    // restart or pause button
+    var mNumber = 140;
+    var result = false;
+
+    if ((x > WIDTH - mNumber && x < WIDTH) &&
+      (y > 0 && y < mNumber)) {
+      result = true;
+    }
+
+    return result;
+  },
   isInPauseButtonArea: function(x, y) {
     // hacky
     var mNumber = 80;
@@ -609,7 +637,7 @@ Game.Play.prototype = {
     return result;
   },
   jump: function(mouse) {
-    if (!this.isInPauseButtonArea(mouse.game.input.x, mouse.game.input.y)) {
+    if (!this.isInButtonsArea(mouse.game.input.x, mouse.game.input.y)) {
       if (!IS_OVER) {
         // jump
         if (this.thePlayer.body.touching.down) {
@@ -748,6 +776,7 @@ Game.Play.prototype = {
   },
   gameOver: function() {
     IS_OVER = true;
+    this.thePlayer.kill(); // hacky (force kill)
 
     if (SCORE > BEST_SCORE) {
       this.updateBestScore(SCORE);
