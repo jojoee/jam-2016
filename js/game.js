@@ -5,20 +5,73 @@
 
 var WIDTH = 640;
 var HEIGHT = 480;
+WIDTH = 736;
+HEIGHT = 414;
 var GAME_ID = 'game-box';
 var Game = {};
 
-var LOADING_SCREEN_COLOR = '#333';
+var LOADING_SCREEN_COLOR;
+var TITLE_COLOR;
+var SUBTITLE_COLOR;
+
+// back theme
+LOADING_SCREEN_COLOR = '#333';
+TITLE_COLOR = '#fff';
+SUBTITLE_COLOR = '#E0E0E0';
+
+// white theme (white bg, font back)
+LOADING_SCREEN_COLOR = '#eee';
+TITLE_COLOR = '#545454';
+SUBTITLE_COLOR = '#65655B';
+
 var GAME_NAME = 'KiKi - The Sacrifice';
+var SUBTITLE_TEXT = 'by - JAM 2016';
 
 var PLAYER_SPRITE_NAME = 'square';
-var SPIKE_SPRITE_NAME = 'spike';
+var TOTEM_SPRITE_NAME;
+// TOTEM_SPRITE_NAME = 'spike';
+
+var PLAYER_SPRITE_WIDTH;
+var PLAYER_SPRITE_HEIGHT;
+
+// white ninja
+// PLAYER_SPRITE_WIDTH = 56;
+// PLAYER_SPRITE_HEIGHT = 40;
+
+// forest guy
+PLAYER_SPRITE_WIDTH = 40;
+PLAYER_SPRITE_HEIGHT = 40;
+
+var IS_OVER = false;
+var IS_DEBUG = false;
+var PAUSE_DELAY = 200;
+
+var DEBUG_XPOS;
+var DEBUG_YPOS;
+
+var STARTED_DEBUG_XPOS = 400;
+var STARTED_DEBUG_YPOS = 8;
+
+var LIFE = 3;
+var SCORE = 0;
+var BEST_SCORE = 0;
+
+var CURRENT_FLOOR = 0;
+var FLOOR_Y_POS = [118, 256, 394];
+var N_FLOOR = FLOOR_Y_POS.length;
 
 /*================================================================ UTIL
 */
 
+// 0 -> n
 function rand(num) {
   return Math.floor(Math.random() * num);
+}
+
+// min -> max
+// http://stackoverflow.com/questions/4959975/generate-random-value-between-two-numbers-in-javascript
+function randBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /*================================================================ BOOT
@@ -29,7 +82,7 @@ Game.Boot.prototype = {
   preload: function() {
     game.stage.backgroundColor = LOADING_SCREEN_COLOR;
     game.load.image('loading', 'assets/images/loading.png');
-    game.load.image('loading2', 'assets/images/loading-border.png');
+    game.load.image('loadingborder', 'assets/images/loading-border.png');
   },
   create: function() {
     game.state.start('Load');
@@ -41,65 +94,110 @@ Game.Boot.prototype = {
 
 Game.Load = function(game) {};
 Game.Load.prototype = {
-  preload: function() {
+  setPreloadingBg: function() {
     game.stage.backgroundColor = LOADING_SCREEN_COLOR;
+  },
+  setPreloadingText: function() {
+    var titleStyle = { font:'50px Arial', fill: TITLE_COLOR };
+    var title = game.add.text(
+      WIDTH / 2,
+      HEIGHT / 2 - 20,
+      GAME_NAME,
+      titleStyle);
+    title.anchor.setTo(0.5, 1);
 
+    var subTitleTextStyle = { font:'16px Arial', fill: SUBTITLE_COLOR };
+    var subTitle = game.add.text(
+      WIDTH / 2,
+      HEIGHT / 2,
+      SUBTITLE_TEXT,
+      subTitleTextStyle);
+    subTitle.anchor.setTo(0.5, 1);
+  },
+  setPreloadingImage: function() {
     // set preloading images
-    var preloadingBorder = game.add.sprite(WIDTH / 2, HEIGHT / 2 + 30, 'loading2');
+    var preloadingBorder = game.add.sprite(WIDTH / 2, HEIGHT / 2 + 30, 'loadingborder');
     preloadingBorder.x -= preloadingBorder.width / 2;
     preloadingBorder.alpha = 0.5;
 
     var preloading = game.add.sprite(WIDTH / 2, HEIGHT / 2 + 30, 'loading');
     preloading.x -= preloading.width / 2;
     game.load.setPreloadSprite(preloading);
-    
-    var titleText = GAME_NAME;
-    var titleStyle = { font:'50px Arial', fill: '#fff' }; // #545454
-    var title = game.add.text(
-      WIDTH / 2,
-      HEIGHT / 2,
-      titleText,
-      titleStyle);
-    title.anchor.setTo(0.5, 1);
-
-    var subTitleText = 'by - JAM 2016';
-    var subTitleTextStyle = { font:'16px Arial', fill:'#E0E0E0' }; //'#65655B'
-    var subTitle = game.add.text(
-      WIDTH / 2,
-      HEIGHT / 2 + 20,
-      subTitleText,
-      subTitleTextStyle);
-    subTitle.anchor.setTo(0.5, 1);
+  },
+  preload: function() {
+    this.setPreloadingBg();
+    this.setPreloadingImage();
+    this.setPreloadingText();
 
     // load all asets
-    game.load.image(PLAYER_SPRITE_NAME, 'assets/images/square.png');
-    game.load.image(SPIKE_SPRITE_NAME, 'assets/images/spike.png');
-    game.load.image('pixel', 'assets/images/pixel.png');
-    game.load.image('background', 'assets/images/background-texture.png');
-    game.load.image('floor', 'assets/images/floor.png');
+    // game.load.image(PLAYER_SPRITE_NAME, 'assets/images/square.png');
+    game.load.spritesheet(PLAYER_SPRITE_NAME, 'assets/images/player.png', PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
 
-    game.load.image('maskdash', 'assets/images/mask-dash.png');
-    game.load.image('maskfire', 'assets/images/mask-fire.png');
-    game.load.image('maskdig', 'assets/images/mask-dig.png');
+    // game.load.image(TOTEM_SPRITE_NAME, 'assets/images/spike.png');
+    game.load.image('totem1', 'assets/images/totem1.png');
+    game.load.image('totem2', 'assets/images/totem2.png');
+    game.load.image('totem3', 'assets/images/totem3.png');
+
+    game.load.image('dieparticle', 'assets/images/die-particle.png');
+    game.load.image('warpparticle', 'assets/images/warp-particle.png');
+    game.load.image('maskparticle', 'assets/images/mask-particle.png');
+
+    // game.load.image('background', 'assets/images/background-texture.png');
+    game.load.image('background', 'assets/images/bg.jpg');
+    // game.load.image('floor', 'assets/images/floor.png');
+    game.load.image('floor', 'assets/images/floor.jpg');
+    game.load.image('startbutton', 'assets/images/start-button.png');
+    game.load.image('pausebutton', 'assets/images/pause-button.png');
+
+    game.load.image('dashmask', 'assets/images/mask-dash.png');
+    game.load.image('firemask', 'assets/images/mask-fire.png');
+    game.load.image('digmask', 'assets/images/mask-dig.png');
 
     game.load.audio('hit', 'assets/sounds/hit.wav');
     game.load.audio('jump', 'assets/sounds/jump.wav');
     game.load.audio('music', 'assets/sounds/music.wav');
-    game.load.audio('bonus', 'assets/sounds/bonus.wav');
-
-    // test progress bar
-    // game.load.image('bgtile', 'assets/test/bgtile.jpg');
-    // game.load.image('fappyBird', 'assets/test/fappyBird.png');
-    // game.load.image('fappyGround', 'assets/test/fappyGround.png');
-    // game.load.image('fappyTitle', 'assets/test/fappyTitle.png');
-    // game.load.image('pipe1', 'assets/test/pipe1.png');
-    // game.load.image('tilebg', 'assets/test/tilebg.png');
-    // game.load.image('vertpipe', 'assets/test/vertpipe.png');
-    // game.load.audio('hit', 'assets/test/hit.wav');
-    // game.load.audio('next', 'assets/test/next.wav');
-    // game.load.audio('music', 'assets/test/music.wav');
+    game.load.audio('bonus', 'assets/sounds/bonus.wav');    
   },
   create: function() {
+    game.state.start('Menu');
+  }
+};
+
+/*================================================================ MENU
+*/
+
+Game.Menu = function(game) {};
+Game.Menu.prototype = {
+  setPreloadingBg: function() {
+    game.stage.backgroundColor = LOADING_SCREEN_COLOR;
+  },
+  setPreloadingText: function() {
+    var titleStyle = { font: '50px Arial', fill: TITLE_COLOR };
+    var title = game.add.text(
+      WIDTH / 2,
+      HEIGHT / 2 - 20,
+      GAME_NAME,
+      titleStyle);
+    title.anchor.setTo(0.5, 1);
+
+    var subTitleTextStyle = { font: '16px Arial', fill: SUBTITLE_COLOR };
+    var subTitle = game.add.text(
+      WIDTH / 2,
+      HEIGHT / 2,
+      SUBTITLE_TEXT,
+      subTitleTextStyle);
+    subTitle.anchor.setTo(0.5, 1);
+  },
+  setStartButton: function() {
+    this.startButton = game.add.button(WIDTH / 2, 280, 'startbutton', this.startClick, this);
+    this.startButton.anchor.setTo(0.5, 0.5);
+  },
+  create: function() {
+    this.setPreloadingBg();
+    this.setPreloadingText();
+    this.setStartButton();
+  },
+  startClick: function() {
     game.state.start('Play');
   }
 };
@@ -107,344 +205,622 @@ Game.Load.prototype = {
 /*================================================================ PLAY
 */
 
-var DEBUG_XPOS;
-var DEBUG_YPOS;
-
-var STARTED_DEBUG_XPOS = 400;
-var STARTED_DEBUG_YPOS = 16;
-
 Game.Play = function(game) {};
 Game.Play.prototype = {
   echoDebug: function(txt, val) {
     game.debug.text(txt + ': ' + val, DEBUG_XPOS, DEBUG_YPOS += 20);
   },
-  resize: function() {
-    console.log('resize');
-  },
-  shutdown: function() {
-    console.log('shutdown');
-  },
-  create: function() {
-    // enable plugin
-    game.plugins.screenShake = this.game.plugins.add(Phaser.Plugin.ScreenShake);
+  drawMask: function(maskNameGroup, maskSpriteName, n) {
+    for (var i = 0; i < n; i += 1) {
+      var floorIdx = this.randomFloor();
+      var maskXPos = Math.floor(Math.random() * 400) + 120;
+      var maskYPos = FLOOR_Y_POS[floorIdx] - 2 * game.cache.getImage(maskSpriteName).height;
 
+      var mask = game.add.sprite(maskXPos, maskYPos, maskSpriteName);
+      mask.anchor.setTo(0.5, 0.5);
+      maskNameGroup.add(mask);
+
+      game.physics.arcade.enable(mask);
+      mask.body.allowGravity = false;
+    }
+  },
+  pauseGame: function() {
+    game.paused = true;
+    
+    var pauseText = 'GAME PAUSED';
+    var pauseStyle = { font: '50px Arial', fill: '#fff' };
+
+    var pauseLabel = this.add.text(
+      WIDTH / 2,
+      HEIGHT / 2,
+      pauseText,
+      pauseStyle);
+    pauseLabel.anchor.setTo(0.5, 1);
+
+    this.input.onDown.add(function() {
+      pauseLabel.destroy();
+      game.paused = false;
+    }, this);
+  },
+  updateScore: function(num) {
+    SCORE = num;
+    var text = 'SCORE: ' + SCORE;
+    this.scoreLabel.setText(text);
+  },
+  updateBestScore: function(num) {
+    BEST_SCORE = num;
+    var text = 'BEST: ' + BEST_SCORE;
+    this.bestScoreLabel.setText(text);
+  },
+  updateLife: function(num) {
+    LIFE = num;
+    var text = 'LIFE: ' + LIFE;
+    this.lifeLabel.setText(text);
+  },
+  updateMask: function(str) {
+    this.currentMask = str;
+    var text = 'MASK: ' + this.currentMask;
+    this.maskLabel.setText(text);
+  },
+  setPlayer: function() {
+    // player
+    this.xSpeed = 200; // pixels / frame
+    var startedPlayerXPos = 0;
+
+    var startedPlayerYPos = FLOOR_Y_POS[CURRENT_FLOOR] - game.cache.getImage(PLAYER_SPRITE_NAME).height / 2;
+    // this.thePlayer = game.add.sprite(startedPlayerXPos, startedPlayerYPos, PLAYER_SPRITE_NAME);
+
+    this.thePlayer = game.add.sprite(PLAYER_SPRITE_WIDTH, startedPlayerYPos, PLAYER_SPRITE_NAME);
+    this.thePlayer.scale.setTo(0.5, 0.5);
+
+    var run = this.thePlayer.animations.add('run');
+    this.thePlayer.animations.play('run', PLAYER_SPRITE_WIDTH, true);
+
+    this.thePlayer.anchor.setTo(0.5, 0.5);
+    game.physics.arcade.enable(this.thePlayer);
+    this.thePlayer.allowGravity = true;
+    this.thePlayer.body.velocity.x = this.xSpeed
+  },
+  setPauseButton: function() {
+    this.pauseButton = game.add.button(WIDTH - 40, 40, 'pausebutton', this.pauseGame, this);
+    this.pauseButton.anchor.setTo(0.5, 0.5);
+  },
+  setScoreLabel: function() {
+    var scoreText = 'SCORE: ' + SCORE;
+    var scoreStyle = { font: '16px Arial', fill: '#fff' };
+    this.scoreLabel = this.add.text(16, 16, scoreText, scoreStyle);
+    this.scoreLabel.anchor.setTo(0, 0);
+  },
+  setBestScoreLabel: function() {
+    var bestScoreText = 'BEST: ' + SCORE;
+    var bestScoreStyle = { font: '16px Arial', fill: '#fff' };
+    this.bestScoreLabel = this.add.text(16, 32 + 4, bestScoreText, bestScoreStyle);
+    this.bestScoreLabel.anchor.setTo(0, 0);
+  },
+  setLifeLabel: function() {
+    var lifeText = 'LIFE: ' + LIFE;
+    var lifeStyle = { font: '16px Arial', fill: '#fff' };
+    this.lifeLabel = this.add.text(16, 48 + 8, lifeText, lifeStyle);
+    this.lifeLabel.anchor.setTo(0, 0);
+  },
+  setGameOverLabel: function() {
+    var gameOverText = '';
+    var gameOverStyle = { font: '50px Arial', fill: '#fff' };
+    this.gameOverLabel = this.add.text(WIDTH / 2 - 30, HEIGHT / 2, gameOverText, gameOverStyle);
+    this.gameOverLabel.anchor.setTo(0.5, 0.5);
+  },
+  showGameOverText: function() {
+    var gameOverText = "GAME OVER\nSCORE: " + SCORE;
+    this.gameOverLabel.setText(gameOverText);
+  },
+  clearGameOverLabel: function() {
+    this.gameOverLabel.setText('');
+  },
+  setMaskLabel: function() {
+    var maskText = 'MASK: ' + this.currentMask;
+    var maskStyle = { font: '16px Arial', fill: '#fff' };
+    this.maskLabel = this.add.text(16, 64 + 12, maskText, maskStyle);
+    this.maskLabel.anchor.setTo(0, 0);
+  },
+  setDashMask: function() {
+    this.dashMaskGroup;
+    this.dashMaskAmount = 5;
+    this.dashMaskGroup = game.add.group();
+    this.generateDashMask();
+  },
+  killAllDashMasks: function() {
+    this.dashMaskGroup.forEach(function(mask) {
+      mask.kill();
+    });
+  },
+  generateDashMask: function() {
+    this.drawMask(this.dashMaskGroup, 'dashmask', this.dashMaskAmount);
+    game.physics.arcade.enable(this.dashMaskGroup);
+  },
+  regenerateDashMask: function() {
+    this.killAllDashMasks();
+    this.generateDashMask();
+  },
+  setFireMask: function() {
+    this.fireMaskGroup;
+    this.fireMaskAmount = 0;
+    this.fireMaskGroup = game.add.group();
+    this.generateFireMask();
+  },
+  killAllFireMasks: function() {
+    this.fireMaskGroup.forEach(function(mask) {
+      mask.kill();
+    });
+  },
+  generateFireMask: function() {
+    this.drawMask(this.fireMaskGroup, 'firemask', this.fireMaskAmount);
+    game.physics.arcade.enable(this.fireMaskGroup);
+  },
+  regenerateFireMask: function() {
+    this.killAllFireMasks();
+    this.generateFireMask();
+  },
+  setDigMask: function() {
+    this.digMaskGroup;
+    this.digMaskAmount = 5;
+    this.digMaskGroup = game.add.group();
+    this.generateDigMask();
+  },
+  killAllDigMasks: function() {
+    this.digMaskGroup.forEach(function(mask) {
+      mask.kill();
+    });
+  },
+  generateDigMask: function() {
+    this.drawMask(this.digMaskGroup, 'digmask', this.digMaskAmount);
+    game.physics.arcade.enable(this.digMaskGroup);
+  },
+  regenerateDigMask: function() {
+    this.killAllDigMasks();
+    this.generateDigMask();
+  },
+  setTotem: function() {
+    this.totemGroup;
+    this.totemAmount = 4;
+    this.totemGroup = game.add.group();
+    this.generateTotem();
+  },
+  killAllTotems: function() {
+    this.totemGroup.forEach(function(totem) {
+      totem.kill();
+    });
+  },
+  generateTotem: function() {
+    for (var i = 0; i < this.totemAmount; i += 1) {
+      var floorIdx = this.randomFloor();
+      var xPos = Math.floor(Math.random() * 400) + 120;
+      var yPos = FLOOR_Y_POS[floorIdx] - game.cache.getImage(TOTEM_SPRITE_NAME).height / 2;
+
+      var totemIdx = randBetween(1, 3);
+      var theTotem = game.add.sprite(xPos, yPos, 'totem' + totemIdx);
+      theTotem.anchor.setTo(0.5, 0.5);
+      this.totemGroup.add(theTotem);
+    }
+
+    game.physics.arcade.enable(this.totemGroup);
+  },
+  regenerateTotem: function() {
+    this.killAllTotems();
+    this.generateTotem();
+  },
+  setPlugin: function() {
+    game.plugins.screenShake = this.game.plugins.add(Phaser.Plugin.ScreenShake);
+  },
+  setPhysics: function() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.gravity.y = 900;
-
-    this.xSpeed = 4; // pixels / frame
-    this.jumpWidth = 120; // pixels
-    this.jumpHeight = 40; // pixels
-    this.jumpRotation = 180; // degrees (rotation when jump)
-    this.jumpTime = 0; // jump delay (time passed since the player started jumping)
-    this.isJumping = false;
-
-    this.degToRad = 0.0174532925; // degree to radian
-
-    this.theSpike;
-    this.spikesGroup;
-    this.spikesAmount = 4; // n of spikes
-
-    this.floorYPos = [92, 276, 460 ]; // y pos of each floor
-    this.nFloor = this.floorYPos.length;
-    this.currentFloor = 0; // floor idx
-    this.floorHeight = 20;
-
-    this.levelStart = 0; // x position where the level starts
-    this.levelEnd = WIDTH; // x position where the level ends, in pixels
-
-    this.currentMask = '';
-
-    this.dashMask;
-    this.dashMaskGroup;
-    this.dashMaskAmount = 2;
-
-    this.fireMask;
-    this.fireMaskGroup;
-    this.fireMaskAmount = 2;
-
-    this.digMask;
-    this.digMaskGroup;
-    this.digMaskAmount = 2;
-
-    this.hitSound = game.add.audio('hit');
-    this.jumpSound = game.add.audio('jump');
-    this.bonusSound = game.add.audio('bonus');
-
-    // test
-    // 
-    // this.floorYPos = [92, 184, 276, 368, 460 ];
-    // this.spikesAmount = 10;
-    // this.nFloor = this.floorYPos.length;
-
-    // bg
-    game.background = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'background');
-    game.background.autoScroll(-60, 0);
-
-    // player
-    var startedPlayerXPos = this.levelStart;
-    var startedPlayerYPos = this.floorYPos[this.currentFloor] - game.cache.getImage(PLAYER_SPRITE_NAME).height / 2;
-    this.thePlayer = game.add.sprite(startedPlayerXPos, startedPlayerYPos, PLAYER_SPRITE_NAME);
-    this.thePlayer.anchor.setTo(0.5, 0.5);
-    this.thePlayer.allowGravity = true;
-    
-    // floor
-    this.drawFloor();
-    
-    var i;
-
-    // spikes (set randomly)
-    this.spikesGroup = game.add.group();
-    for (i = 0; i < this.spikesAmount; i += 1) {
-      var floorIdx = this.randomFloor();
-      var spikeXPos = Math.floor(Math.random() * 400) + 120;
-      var spikeYPos = this.floorYPos[floorIdx] - game.cache.getImage(SPIKE_SPRITE_NAME).height / 2;
-
-      this.theSpike = game.add.sprite(spikeXPos, spikeYPos, SPIKE_SPRITE_NAME);
-      this.theSpike.anchor.setTo(0.5, 0.5);
-      this.spikesGroup.add(this.theSpike);
-    }
-
-    // mask dash (set randomly)
-    this.dashMaskGroup = game.add.group();
-    for (i = 0; i < this.dashMaskAmount; i += 1) {
-      var floorIdx = this.randomFloor();
-      var maskDashXPos = Math.floor(Math.random() * 400) + 120;
-      var maskDashYPos = this.floorYPos[floorIdx] - 2 * game.cache.getImage('maskdash').height;
-
-      this.dashMask = game.add.sprite(maskDashXPos, maskDashYPos, 'maskdash');
-      this.dashMask.anchor.setTo(0.5, 0.5);
-      this.dashMaskGroup.add(this.dashMask);
-
-      game.physics.arcade.enable(this.dashMask);
-      this.dashMask.body.allowGravity = false;
-    }
-
-    // mask fire (set randomly)
-    this.fireMaskGroup = game.add.group();
-    for (i = 0; i < this.fireMaskAmount; i += 1) {
-      // var floorIdx = this.randomFloor();
-      // var spikeXPos = Math.floor(Math.random() * 400) + 120;
-      // var spikeYPos = this.floorYPos[floorIdx] - game.cache.getImage(SPIKE_SPRITE_NAME).height / 2;
-
-      // this.theSpike = game.add.sprite(spikeXPos, spikeYPos, SPIKE_SPRITE_NAME);
-      // this.theSpike.anchor.setTo(0.5, 0.5);
-      // this.spikesGroup.add(this.theSpike);
-    }
-
-    // mask dig (set randomly)
-    this.digMaskGroup = game.add.group();
-    for (i = 0; i < this.digMaskAmount; i += 1) {
-      // var floorIdx = this.randomFloor();
-      // var spikeXPos = Math.floor(Math.random() * 400) + 120;
-      // var spikeYPos = this.floorYPos[floorIdx] - game.cache.getImage(SPIKE_SPRITE_NAME).height / 2;
-
-      // this.theSpike = game.add.sprite(spikeXPos, spikeYPos, SPIKE_SPRITE_NAME);
-      // this.theSpike.anchor.setTo(0.5, 0.5);
-      // this.spikesGroup.add(this.theSpike);
-    }
-
-    // enable body
-    game.physics.arcade.enable([
-      this.thePlayer,
-      this.spikesGroup,
-      // this.dashMaskGroup,
-      // this.fireMaskGroup,
-      // this.digMaskGroup
-    ]);
-
-    // input
-    game.input.onDown.add(this.jump, this);
-
-    // emitter
-    var nEmitter = 30;
-    this.emitter = game.add.emitter(0, 0, nEmitter);
-    this.emitter.makeParticles('pixel');
-    this.emitter.gravity = 0;
-    this.emitter.minParticleSpeed.setTo(-200, -200);
-    this.emitter.maxParticleSpeed.setTo(200, 200);
-
-    // bg sound
-    game.add.audio('music').play('', 0, 0.1, true);
   },
-  render: function() {
-    game.debug.spriteInfo(this.thePlayer, 8, 16);
-    game.debug.bodyInfo(this.thePlayer, 8, 106);
-    game.debug.body(this.thePlayer);
-
-    DEBUG_XPOS = STARTED_DEBUG_XPOS;
-    DEBUG_YPOS = STARTED_DEBUG_YPOS;
-
-    this.echoDebug('Mask', this.currentMask);
-    this.echoDebug('Floor', this.currentFloor);
-  },
-  drawFloor: function() {
-    /*
-    var floor = game.add.graphics(0, 0);
-    floor.lineStyle(this.floorHeight, 0x440044, 1);
-
-    var i = 0;
-    var n = this.floorYPos.length;
-    for (i; i < n; i += 1) {
-      floor.moveTo(this.levelStart, this.floorYPos[i] + this.floorHeight / 2); // start pos
-      floor.lineTo(this.levelEnd, this.floorYPos[i] + this.floorHeight / 2); // end pos
-    }
-    */
-
-    // set platforms
+  setFloor: function() {
+    CURRENT_FLOOR = 0; // floor idx
+    
     this.platforms = game.add.group();
     this.platforms.enableBody = true;
     var i = 0;
-    var n = this.floorYPos.length;
-    var mNumber = 60;
+    var n = FLOOR_Y_POS.length;
     for (i; i < n; i += 1) {
-      var floor = this.platforms.create(0 - mNumber, this.floorYPos[i], 'floor');
-      floor.scale.setTo(2, 1);
+      var floor = this.platforms.create(0, FLOOR_Y_POS[i], 'floor');
+      floor.scale.setTo(1, 1);
       floor.body.immovable = true;
       floor.body.allowGravity = false;
-    }
+    }  
+  },
+  setBg: function() {
+    game.background = game.add.tileSprite(0, 0, game.world.width, game.world.height, 'background');
+    // game.background.autoScroll(-60, 0);
+  },
+  setInput: function() {
+    // cursors
+    // this.cursors = game.input.keyboard.createCursorKeys();
     
+    // left-click
+    game.input.onDown.add(this.jump, this)
+
+    // space bar
+    // this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  },
+  setDieEmitter: function() {
+    var nDieEmitter = 30;
+    this.dieEmitter = game.add.emitter(0, 0, nDieEmitter);
+    this.dieEmitter.makeParticles('dieparticle');
+    this.dieEmitter.gravity = 0;
+    this.dieEmitter.minParticleSpeed.setTo(-200, -200);
+    this.dieEmitter.maxParticleSpeed.setTo(200, 200);
+  },
+  setWarpEmitter: function() {
+    var nWarpEmitter = 30;
+    this.warpEmitter = game.add.emitter(0, 0, nWarpEmitter);
+    this.warpEmitter.makeParticles('warpparticle');
+    this.warpEmitter.gravity = 0;
+    this.warpEmitter.minParticleSpeed.setTo(-100, -100);
+    this.warpEmitter.maxParticleSpeed.setTo(100, 100);
+  },
+  setMaskEmitter: function() {
+    var nMaskEmitter = 30;
+    this.maskEmitter = game.add.emitter(0, 0, nMaskEmitter);
+    this.maskEmitter.makeParticles('maskparticle');
+    this.maskEmitter.gravity = 0;
+    this.maskEmitter.minParticleSpeed.setTo(-40, -40);
+    this.maskEmitter.maxParticleSpeed.setTo(40, 40);
+  },
+  setSound: function() {
+    this.hitSound = game.add.audio('hit');
+    this.jumpSound = game.add.audio('jump');
+    this.bonusSound = game.add.audio('bonus');
+    game.add.audio('music').play('', 0, 0.1, true);
+  },
+  create: function() {
+    this.setPlugin();
+    this.setPhysics();
+
+    this.setBg();
+    
+    this.setPlayer();
+
+    this.setFloor();
+    this.setTotem();
+
+    this.setDashMask();
+    this.setFireMask();
+    this.setDigMask();
+      
+    this.setPauseButton();
+    this.setInput();
+
+    this.setDieEmitter();
+    this.setWarpEmitter();
+    this.setMaskEmitter();
+    
+    this.setSound();
+
+    this.setScoreLabel();
+    this.setBestScoreLabel();
+    this.setLifeLabel();
+    this.setGameOverLabel();
+    this.currentMask = '';
+    this.setMaskLabel();
+  },
+  render: function() {
+    if (IS_DEBUG) {
+      // game.debug.spriteInfo(this.thePlayer, 8, 16);
+      // game.debug.bodyInfo(this.thePlayer, 8, 106);
+      // game.debug.body(this.thePlayer);
+
+      DEBUG_XPOS = STARTED_DEBUG_XPOS;
+      DEBUG_YPOS = STARTED_DEBUG_YPOS;
+
+      this.echoDebug('dieEmitter living', this.dieEmitter.countLiving());
+      this.echoDebug('dieEmitter dead', this.dieEmitter.countDead());
+
+      this.echoDebug('warpEmitter living', this.warpEmitter.countLiving());
+      this.echoDebug('warpEmitter dead', this.warpEmitter.countDead());
+
+      this.echoDebug('maskEmitter living', this.maskEmitter.countLiving());
+      this.echoDebug('maskEmitter dead', this.maskEmitter.countDead());
+    }
   },
   randomFloor: function() {
-    return Math.floor(Math.random() * this.floorYPos.length);
+    return Math.floor(Math.random() * FLOOR_Y_POS.length);
   },
-  jump: function() {
-    if (!this.isJumping && this.thePlayer.y === this.getStartedPlayerYPos()) {
-      this.jumpSound.play('', 0, 0.1);
-      this.jumpTime = 0;
-      this.isJumping = true;
+  isEvenFloor: function() {
+    return (CURRENT_FLOOR % 2)  == 0;
+  },
+  useDashSkill: function() {
+    var dashStep = 120;
+    var xStep = (this.isEvenFloor()) ? dashStep : -dashStep;
+    var moveTime = 120;
+
+    var oldPos = {
+      x: this.thePlayer.x,
+      y: this.thePlayer.y
+    };
+
+    var newPos = {
+      x: this.thePlayer.x + xStep,
+      y: this.thePlayer.y
+    }
+
+    this.playerTween = game.add.tween(this.thePlayer)
+      .to(oldPos, moveTime, Phaser.Easing.Linear.None)
+      .to(newPos, moveTime, Phaser.Easing.Linear.None).start();
+
+    this.fadeMaskEmitter();
+    this.resetCurrentMask();
+  },
+  useFireSkill: function() {
+    // unused
+    this.fadeMaskEmitter();
+    this.resetCurrentMask();
+  },
+  useDigSkill: function() {
+    var moveTime = 120;
+    this.updateScore(SCORE + 1);
+
+    if (CURRENT_FLOOR === N_FLOOR - 1) {
+      this.warpToFirstFloor();
 
     } else {
-      if (this.currentMask == 'dash') {
-        var mod = this.currentFloor % 2;
-        var step = 120;
-        var xStep = (this.currentFloor % 2 == 0) ? step : -step;
-        var newXPos = this.thePlayer.x + xStep;
-        var newYPos = this.thePlayer.y;
-        // var newYPos = this.getStartedPlayerYPos();
+      this.playWarpEmitter();
+      this.wrapToNextFloor();
+    }
 
-        var currentPos = { x: this.thePlayer.x, y: this.thePlayer.y };
-        var targetedPos = { x: newXPos, y: newYPos }
+    this.fadeMaskEmitter();
+    this.resetCurrentMask();
+  },
+  isInPauseButtonArea: function(x, y) {
+    // hacky
+    var mNumber = 80;
+    var result = false;
+    if ((x > WIDTH - mNumber && x < WIDTH) &&
+      (y > 0 && y < mNumber)) {
+      result = true;
+    }
 
-        var moveTime = 120;
+    return result;
+  },
+  jump: function(mouse) {
+    if (!this.isInPauseButtonArea(mouse.game.input.x, mouse.game.input.y)) {
+      if (IS_OVER) {
+        this.newGame();
 
-        this.playerTween = game.add.tween(this.thePlayer)
-          .to(currentPos, moveTime, Phaser.Easing.Linear.None)
-          .to(targetedPos, moveTime, Phaser.Easing.Linear.None).start();
+      } else {
+        // jump
+        if (this.thePlayer.body.touching.down) {
+          this.jumpSound.play('', 0, 0.1);
+          this.thePlayer.body.velocity.y = -300;
 
-        this.resetCurrentMask();
+        // use skill
+        } else {
+          switch (this.currentMask) {
+            case 'dash':
+              this.useDashSkill();
+              break;
+            case 'fire':
+              this.useFireSkill();
+              break;
+            case 'dig':
+              this.useDigSkill();
+              break;
+          }
+        }
       }
     }
   },
   resetCurrentMask: function() {
-    this.currentMask = '';
+    this.updateMask('');
   },
-  isMovingToNextFloor: function() {
-    var mod = this.currentFloor % 2;
-    var isEvenToOddFloor = (mod === 0 && this.thePlayer.x > this.levelEnd);
-    var isOddToEvenFloor = (mod === 1 && this.thePlayer.x < this.levelStart);
+  isGoingToNextFloor: function() {
+    var result = false;
+    if (this.isEvenFloor() && (this.thePlayer.x > WIDTH)) {
+      result = true;
 
-    return isEvenToOddFloor || isOddToEvenFloor;
-  },
-  goToNextLevel: function() {
-    // TODO
-    // 
-    // add new level
-    this.currentFloor = 0;
-  },
-  fadeAllEmitter: function() {
-    // var msg = 'emitter - ';
-    // msg += 'countLiving: ' + this.emitter.countLiving() + ', ';
-    // msg += 'countDead: ' + this.emitter.countDead();
-    // console.log(msg);
+    } else if (!this.isEvenFloor() && (this.thePlayer.x < 0)) {
+      result = true;
+    }
 
-    this.emitter.forEachAlive(function(particle) {
+    return result;
+  },
+  fadeDieEmitter: function() {
+    this.dieEmitter.forEachAlive(function(particle) {
       particle.alpha = game.math.clamp(particle.lifespan / 100, 0, 1);
     }, this);
   },
-  goToFirstFloor: function() {
-    // unused
-    
-    this.currentFloor = 0;
+  fadeWarpEmitter: function() {
+    this.warpEmitter.forEachAlive(function(particle) {
+      particle.alpha = game.math.clamp(particle.lifespan / 100, 0, 1);
+    }, this);  
   },
-  resetCurrentLevel: function() {
-    // unused
-    
-    this.currentFloor = 0;
+  fadeMaskEmitter: function() {
+    this.maskEmitter.forEachAlive(function(particle) {
+      particle.alpha = game.math.clamp(particle.lifespan / 100, 0, 1);
+    }, this);  
   },
-  playerHit: function(player, mask) {
-    this.hitSound.play('', 0, 0.2);
-    game.plugins.screenShake.shake(10);
-    
-    this.emitter.x = this.thePlayer.x + this.thePlayer.width / 2;
-    this.emitter.y = this.thePlayer.y + this.thePlayer.height / 2;
-    this.emitter.start(true, 300, null, 8);
-
-    this.resetPlayerStat();
+  fadeAllEmitters: function() {
+    this.fadeDieEmitter();
+    this.fadeWarpEmitter();
+    this.fadeMaskEmitter();
+  },
+  playDieEmitter: function() {
+    this.dieEmitter.x = this.thePlayer.x + this.thePlayer.width / 2;
+    this.dieEmitter.y = this.thePlayer.y + this.thePlayer.height / 2;
+    this.dieEmitter.start(true, 300, null, 8);
+  },
+  playMaskEmitter: function() {
+    this.maskEmitter.x = this.thePlayer.x;
+    this.maskEmitter.y = this.thePlayer.y;
+    this.maskEmitter.start(true, 100, null, 6);
+  },
+  playWarpEmitter: function() {
+    this.warpEmitter.x = this.thePlayer.x;
+    this.warpEmitter.y = this.thePlayer.y;
+    this.warpEmitter.start(true, 200, null, 6);
   },
   getDashMask: function(player, mask) {
     this.bonusSound.play('', 0, 0.1);
     mask.kill();
-    this.currentMask = 'dash';
+    this.updateMask('dash');
+  },
+  getFireMask: function(player, mask) {
+    this.bonusSound.play('', 0, 0.1);
+    mask.kill();
+    this.updateMask('fire');
+  },
+  getDigMask: function(player, mask) {
+    this.bonusSound.play('', 0, 0.1);
+    mask.kill();
+    this.updateMask('dig');
+  },
+  gameOver: function() {
+    IS_OVER = true;
+
+    if (SCORE > BEST_SCORE) {
+      this.updateBestScore(SCORE);
+    }
+
+    this.showGameOverText();
+  },
+  goToFloor: function() {
+    var xSpeed;
+    var xPos;
+    var yPos = this.getStartedPlayerYPos();
+    var scaleX
+    if (this.isEvenFloor()) {
+      xSpeed = this.xSpeed;
+      xPos = 0;
+      scaleX = 0.5;
+    } else {
+      xSpeed = -this.xSpeed;
+      xPos = WIDTH;
+      scaleX = -0.5;
+    }
+    
+    this.thePlayer.kill();
+    this.thePlayer = game.add.sprite(xPos, yPos, PLAYER_SPRITE_NAME);
+    this.thePlayer.anchor.setTo(0.5, 0.5);
+    this.thePlayer.scale.setTo(scaleX, 0.5);
+
+    var run = this.thePlayer.animations.add('run');
+    this.thePlayer.animations.play('run', PLAYER_SPRITE_WIDTH, true);
+
+    game.physics.arcade.enable(this.thePlayer);
+    this.thePlayer.allowGravity = true;
+    this.thePlayer.body.velocity.x = xSpeed;
+  },
+  goToCurrentFloor: function() {
+    this.goToFloor();
+  },
+  goToNextFloor: function() {
+    CURRENT_FLOOR++;
+    if (CURRENT_FLOOR === N_FLOOR) {
+      CURRENT_FLOOR = 0;
+    }
+
+    this.goToFloor();
+  },
+  goToFirstFloor: function() {
+    CURRENT_FLOOR = 0;
+    this.goToFloor();
+  },
+  warpToFloor: function() {
+    var xSpeed;
+    var xPos = this.thePlayer.x;
+    var yPos = this.getStartedPlayerYPos() - 80;
+    var scaleX
+    if (this.isEvenFloor()) {
+      xSpeed = this.xSpeed;
+      scaleX = 0.5;
+    } else {
+      xSpeed = -this.xSpeed;
+      scaleX = -0.5;
+    }
+    
+    this.thePlayer.kill();
+    this.thePlayer = game.add.sprite(xPos, yPos, PLAYER_SPRITE_NAME);
+    this.thePlayer.anchor.setTo(0.5, 0.5);
+    this.thePlayer.scale.setTo(scaleX, 0.5);
+
+    var run = this.thePlayer.animations.add('run');
+    this.thePlayer.animations.play('run', PLAYER_SPRITE_WIDTH, true);
+
+    game.physics.arcade.enable(this.thePlayer);
+    this.thePlayer.allowGravity = true;
+    this.thePlayer.body.velocity.x = xSpeed;
+  },
+  wrapToNextFloor: function() {
+    CURRENT_FLOOR++;
+    this.warpToFloor();
+  },
+  warpToFirstFloor: function() {
+    CURRENT_FLOOR = 0;
+    this.warpToFloor();
+  },
+  hitTotem: function(player, totem) {
+    this.hitSound.play('', 0, 0.2);
+    game.plugins.screenShake.shake(10);
+    this.playDieEmitter();
+    player.kill();
+    this.updateLife(LIFE - 1);
+
+    if (LIFE === 0) {
+      this.gameOver();
+
+    } else {
+      this.goToCurrentFloor();
+    }
+  },
+  newGame: function() {
+    IS_OVER = false;
+    this.clearGameOverLabel();
+    this.thePlayer.kill(); // duplicate kill
+    this.fadeAllEmitters();
+    this.resetCurrentMask();
+    this.updateLife(3);
+    this.updateScore(0);
+
+    this.regenerateDashMask();
+    this.regenerateFireMask();
+    this.regenerateDigMask();
+
+    this.regenerateTotem();
+
+    this.goToFirstFloor();
   },
   getStartedPlayerYPos: function() {
-    return this.floorYPos[this.currentFloor] - game.cache.getImage(PLAYER_SPRITE_NAME).height / 2;
-  },
-  resetPlayerStat: function() {
-    var mod = this.currentFloor % 2;
-    this.isJumping = false;
-    this.thePlayer.rotation = 0;
-    this.thePlayer.x = this.levelEnd * mod + this.levelStart * (1 - mod);
-    this.thePlayer.y = this.getStartedPlayerYPos();
+    return FLOOR_Y_POS[CURRENT_FLOOR] - PLAYER_SPRITE_HEIGHT / 2;
   },
   update: function() {
     game.physics.arcade.collide(this.platforms, this.thePlayer);
-    game.physics.arcade.collide(this.platforms, this.spikesGroup);
+    game.physics.arcade.collide(this.platforms, this.totemGroup);
 
-    var mod = this.currentFloor % 2; // odd / even floor
+    if (!IS_OVER) {  
 
-    this.thePlayer.x += this.xSpeed * (1 - 2 * mod);
-
-    // up to next floor
-    if (this.isMovingToNextFloor()) {
-
-      if (this.playerTween) {
-        this.playerTween.stop();
-        delete this.playerTween;
+      if (this.currentMask) {
+        this.playMaskEmitter();
       }
 
-      this.currentFloor++;
+      // up to next floor
+      if (this.isGoingToNextFloor()) {
+        // dash
+        if (this.playerTween) {
+          this.playerTween.pause();
+          this.playerTween.stop();
+        }
 
-      // finish the last floor
-      if (this.currentFloor > this.nFloor - 1) {
-        this.goToNextLevel();
+        this.updateScore(SCORE + 1);
+        this.goToNextFloor();
       }
 
-      this.resetPlayerStat();
+      this.fadeAllEmitters();
+
+      game.physics.arcade.overlap(this.thePlayer, this.totemGroup, this.hitTotem, null, this);
+      game.physics.arcade.overlap(this.thePlayer, this.dashMaskGroup, this.getDashMask, null, this);
+      game.physics.arcade.overlap(this.thePlayer, this.fireMaskGroup, this.getFireMask, null, this);
+      game.physics.arcade.overlap(this.thePlayer, this.digMaskGroup, this.getDigMask, null, this);
     }
-    
-    // if jumping
-    if (this.isJumping) {
-      var jumpFrames = this.jumpWidth / this.xSpeed;
-      var degreesPerFrame = this.jumpRotation / jumpFrames * (1 - 2 * mod);
-      var radiansPerFrame = (180 / jumpFrames) * this.degToRad;
-      
-      this.jumpTime += 1;
-      this.thePlayer.angle += degreesPerFrame;
-
-      this.thePlayer.y = this.getStartedPlayerYPos();
-      this.thePlayer.y -= this.jumpHeight * Math.sin(radiansPerFrame * this.jumpTime);
-
-      // jumped enough...
-      if (this.jumpTime == jumpFrames) {
-        this.isJumping = false;
-        this.thePlayer.y = this.getStartedPlayerYPos();
-      }
-    }
-
-    this.fadeAllEmitter();
-
-    game.physics.arcade.overlap(this.thePlayer, this.spikesGroup, this.playerHit, null, this);
-    game.physics.arcade.overlap(this.thePlayer, this.dashMaskGroup, this.getDashMask, null, this);
   }
 };
 
@@ -454,8 +830,8 @@ Game.Play.prototype = {
 var game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'game-box');
 game.state.add('Boot', Game.Boot);
 game.state.add('Load', Game.Load);
-// game.state.add('Menu', Game.Menu);
+game.state.add('Menu', Game.Menu);
 game.state.add('Play', Game.Play);
-// game.state.add('End', Game.End);
+game.state.add('Over', Game.Over);
 
 game.state.start('Boot');

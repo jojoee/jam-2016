@@ -10,6 +10,14 @@ Our project on Global Game Jam 2016 (29-31 Jan 2016)
 
 ## Game Description
 
+## TODO
+- [x] Bug: when the player was hit then it go to next floor
+- [x] Bug: when dash to the next floor
+- [x] Change warp emitter effect
+- [ ] Implement `fire`
+- [ ] Implement `health`
+- [x] When new game set new `totem` and `mask`
+
 ## Controls
 
 `left-click`, `tab`, `up`, `space` to jump and fire

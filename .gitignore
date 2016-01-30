@@ -7,3 +7,10 @@ bk
 bk*
 README*.md
 !README-*.md
+images-bk
+
+# test
+test
+
+# graphic
+*.psd
