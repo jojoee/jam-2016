@@ -19,6 +19,9 @@ LOADING_SCREEN_COLOR = '#eee';
 TITLE_COLOR = '#545454';
 SUBTITLE_COLOR = '#65655B';
 
+TITLE_COLOR = '#fff';;
+SUBTITLE_COLOR = '#F1F1F1';
+
 var GAME_NAME = 'KiKi - The Sacrifice';
 var SUBTITLE_TEXT = 'by - JAM 2016';
 
@@ -122,6 +125,8 @@ Game.Load.prototype = {
     // load all asets
     game.load.spritesheet(PLAYER_SPRITE_NAME, 'assets/images/player.png', PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
 
+    game.load.image('menubg', 'assets/images/menu-bg.jpg');
+
     game.load.image('totem1', 'assets/images/totem1.png');
     game.load.image('totem2', 'assets/images/totem2.png');
     game.load.image('totem3', 'assets/images/totem3.png');
@@ -184,6 +189,8 @@ Game.Menu.prototype = {
     this.startButton.anchor.setTo(0.5, 0.5);
   },
   create: function() {
+    var menuBg = game.add.tileSprite(0, 0, WIDTH, HEIGHT, 'menubg');
+
     this.setPreloadingBg();
     this.setPreloadingText();
     this.setStartButton();
