@@ -11,7 +11,8 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 ## Game Description
 
 ## Rules
-- regenerate `totem` when we going form last floor to the first floor
+- Regenerate `totem` when we going form last floor to the first floor
+- Maximum life: 3
 
 ## TODO
 - [x] Bug: when the player was hit then it go to next floor
