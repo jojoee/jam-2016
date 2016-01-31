@@ -243,6 +243,10 @@ Game.Intro.prototype = {
 
     // set skip button
     this.setSkipButton();
+
+    if (IS_DEBUG) {
+      this.goToMenuScreen();
+    }
   }
 };
 
@@ -281,6 +285,10 @@ Game.Menu.prototype = {
     this.setPreloadingBg();
     this.setPreloadingText();
     this.setStartButton();
+
+    if (IS_DEBUG) {
+      this.startClick();
+    }
   },
   startClick: function() {
     var stateName = 'Howto';
@@ -313,7 +321,11 @@ Game.Howto.prototype = {
     this.howtoPanelTween = game.add.tween(this.howtoPanel);
     this.howtoPanelTween.to({ y: HEIGHT / 2, alpha: 1 }, 1000, Phaser.Easing.Bounce.Out).start();
 
-    game.input.onDown.add(this.goToPlayState, this)
+    game.input.onDown.add(this.goToPlayState, this);
+
+    if (IS_DEBUG) {
+      this.goToPlayState();
+    }
   },
   goToPlayState: function() {
     var stateName = 'Play';
