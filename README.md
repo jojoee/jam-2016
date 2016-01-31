@@ -13,6 +13,11 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 ## Rules
 - Regenerate `totem` when we going form last floor to the first floor
 - Maximum life: 3
+- Mask
+  - `dig`
+  - `dash`
+- Item
+  - `life`
 
 ## TODO
 - [x] Bug: when the player was hit then it go to next floor
@@ -26,9 +31,17 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 - [x] Add state transition
 - [ ] Double jump mask
 - [ ] Scoreboard
+- [ ] Upload game play video into youtube
+- [ ] Create facebook fanpage
+- [ ] Upload screenshot into facebook fanpage
+- [ ] Increase `character` / `totem` / `mask` size
 - [x] Decrease fade effect time on `howto` state
 - [x] Change life label from `number` to `image`
 - [ ] Change current mask label from `text` to `image`
+- [ ] Set background color when ShakeScreen
+- [ ] Port to mobile
+- [ ] Add github's ribbon
+- [ ] Support mobile
 
 ## Controls
 
