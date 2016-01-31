@@ -51,6 +51,10 @@ var CURRENT_FLOOR = 0;
 var FLOOR_Y_POS = [118, 256, 394];
 var N_FLOOR = FLOOR_Y_POS.length;
 
+var MAIN_FONT_FAMILY;
+// MAIN_FONT_FAMILY = 'Arial';
+MAIN_FONT_FAMILY = 'Permanent Marker';
+
 /*================================================================ UTIL
 */
 
@@ -152,7 +156,7 @@ Game.Load.prototype = {
     game.stage.backgroundColor = LOADING_SCREEN_COLOR;
   },
   setPreloadingText: function() {
-    var titleStyle = { font:'50px Arial', fill: '#545454' };
+    var titleStyle = { font: '50px ' + MAIN_FONT_FAMILY, fill: '#545454' };
     var title = game.add.text(
       WIDTH / 2,
       HEIGHT / 2 - 20,
@@ -160,7 +164,7 @@ Game.Load.prototype = {
       titleStyle);
     title.anchor.setTo(0.5, 1);
 
-    var subTitleTextStyle = { font:'16px Arial', fill: '#65655B' };
+    var subTitleTextStyle = { font: '16px ' + MAIN_FONT_FAMILY, fill: '#65655B' };
     var subTitle = game.add.text(
       WIDTH / 2,
       HEIGHT / 2,
@@ -287,7 +291,7 @@ Game.Menu.prototype = {
     game.stage.backgroundColor = LOADING_SCREEN_COLOR;
   },
   setPreloadingText: function() {
-    var titleStyle = { font: '50px Arial', fill: TITLE_COLOR };
+    var titleStyle = { font: '50px ' + MAIN_FONT_FAMILY, fill: TITLE_COLOR };
     var title = game.add.text(
       WIDTH / 2,
       HEIGHT / 2 - 20,
@@ -295,7 +299,7 @@ Game.Menu.prototype = {
       titleStyle);
     title.anchor.setTo(0.5, 1);
 
-    var subTitleTextStyle = { font: '16px Arial', fill: SUBTITLE_COLOR };
+    var subTitleTextStyle = { font: '16px ' + MAIN_FONT_FAMILY, fill: SUBTITLE_COLOR };
     var subTitle = game.add.text(
       WIDTH / 2,
       HEIGHT / 2,
@@ -420,7 +424,7 @@ Game.Play.prototype = {
       game.paused = true;
       
       var pauseText = 'GAME PAUSED';
-      var pauseStyle = { font: '50px Arial', fill: '#fff' };
+      var pauseStyle = { font: '50px ' + MAIN_FONT_FAMILY, fill: '#fff' };
 
       var pauseLabel = this.add.text(
         WIDTH / 2,
@@ -501,13 +505,13 @@ Game.Play.prototype = {
   },
   setScoreLabel: function() {
     var scoreText = 'SCORE: ' + SCORE;
-    var scoreStyle = { font: '16px Arial', fill: '#fff' };
+    var scoreStyle = { font: '16px ' + MAIN_FONT_FAMILY, fill: '#fff' };
     this.scoreLabel = this.add.text(16, 36, scoreText, scoreStyle);
     this.scoreLabel.anchor.setTo(0, 0);
   },
   setBestScoreLabel: function() {
     var bestScoreText = 'BEST: ' + SCORE;
-    var bestScoreStyle = { font: '16px Arial', fill: '#fff' };
+    var bestScoreStyle = { font: '16px ' + MAIN_FONT_FAMILY, fill: '#fff' };
     this.bestScoreLabel = this.add.text(16, 56, bestScoreText, bestScoreStyle);
     this.bestScoreLabel.anchor.setTo(0, 0);
   },
@@ -516,7 +520,7 @@ Game.Play.prototype = {
     var lifeText;
     // lifeText = 'LIFE: ' + LIFE;
     lifeText = 'LIFE:';
-    var lifeStyle = { font: '16px Arial', fill: '#fff' };
+    var lifeStyle = { font: '16px ' + MAIN_FONT_FAMILY, fill: '#fff' };
     this.lifeLabel = this.add.text(16, 16, lifeText, lifeStyle);
     this.lifeLabel.anchor.setTo(0, 0);
 
@@ -526,8 +530,8 @@ Game.Play.prototype = {
     this.lifeLabelImages = [];
 
     for (var i = 0; i < MAX_LIFE; i += 1) {
-      var xPos = 62 + 20 * i;
-      var yPos = 26;
+      var xPos = 67 + 20 * i;
+      var yPos = 28;
 
       this.lifeLabelImages[i] = game.add.sprite(xPos, yPos, 'lifeimage');
       var spin = this.lifeLabelImages[i].animations.add('spin');
@@ -542,7 +546,7 @@ Game.Play.prototype = {
   },
   setMaskLabel: function() {
     var maskText = 'MASK: ' + this.currentMask;
-    var maskStyle = { font: '16px Arial', fill: '#fff' };
+    var maskStyle = { font: '16px ' + MAIN_FONT_FAMILY, fill: '#fff' };
     this.maskLabel = this.add.text(16, 64 + 12, maskText, maskStyle);
     this.maskLabel.anchor.setTo(0, 0);
   },
@@ -944,7 +948,7 @@ Game.Play.prototype = {
 
     var gameOverText = 'SCORE: ' + SCORE;
     var gameOverStyle = {
-      font: '50px Arial',
+      font: '50px ' + MAIN_FONT_FAMILY,
       fill: '#545454',
       wordWrap: true,
       wordWrapWidth: this.gameOverPanel.width,
