@@ -210,6 +210,8 @@ Game.Load.prototype = {
 
     game.load.spritesheet('lifeitem', 'assets/images/item-life.png', 20, 20);
 
+    game.load.spritesheet('lifeimage', 'assets/images/life-image.png', 20, 20);
+
     game.load.audio('hit', 'assets/sounds/hit.wav');
     game.load.audio('jump', 'assets/sounds/jump.wav');
     game.load.audio('music', 'assets/sounds/music.wav');
@@ -455,8 +457,11 @@ Game.Play.prototype = {
     }
 
     LIFE = num;
-    var text = 'LIFE: ' + LIFE;
-    this.lifeLabel.setText(text);
+
+    for (var i = 0; i < MAX_LIFE; i++) {
+      var lifeAlpha = (i < LIFE) ? 1 : 0;
+      this.lifeImages[i].alpha = lifeAlpha;
+    };
   },
   updateMask: function(str) {
     this.currentMask = str;
@@ -507,10 +512,30 @@ Game.Play.prototype = {
     this.bestScoreLabel.anchor.setTo(0, 0);
   },
   setLifeLabel: function() {
-    var lifeText = 'LIFE: ' + LIFE;
+    // life label text
+    var lifeText;
+    // lifeText = 'LIFE: ' + LIFE;
+    lifeText = 'LIFE:';
     var lifeStyle = { font: '16px Arial', fill: '#fff' };
-    this.lifeLabel = this.add.text(16, 48 + 8, lifeText, lifeStyle);
+    this.lifeLabel = this.add.text(16, 56, lifeText, lifeStyle);
     this.lifeLabel.anchor.setTo(0, 0);
+
+    // life label `life` images
+    this.lifeImageGroup;
+    this.lifeImageGroup = game.add.group();
+    this.lifeImages = [];
+
+    for (var i = 0; i < MAX_LIFE; i += 1) {
+      var xPos = 62 + 20 * i;
+      var yPos = 66;
+
+      this.lifeImages[i] = game.add.sprite(xPos, yPos, 'lifeimage');
+      var spin = this.lifeImages[i].animations.add('spin');
+      this.lifeImages[i].animations.play('spin', 6, true);
+      this.lifeImages[i].anchor.setTo(0.5, 0.5);
+      this.lifeImageGroup.add(this.lifeImages[i]);
+      this.lifeImages[i].alpha = 1;
+    }
   },
   clearGameOverLabel: function() {
     this.gameOverLabel.setText('');
