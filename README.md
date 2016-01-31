@@ -21,10 +21,9 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 - [ ] Implement `fire`
 - [x] Implement `health`
 - [x] When new game set new `totem` and `mask`
-- [ ] Use `totem` to make `border-image`
 - [x] Add Howto
 - [x] Add video intro
-- [ ] Add state transition
+- [x] Add state transition
 - [ ] Double jump mask
 
 ## Controls
