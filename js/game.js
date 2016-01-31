@@ -531,7 +531,7 @@ Game.Play.prototype = {
 
     for (var i = 0; i < MAX_LIFE; i += 1) {
       var xPos = 67 + 20 * i;
-      var yPos = 28;
+      var yPos = 27;
 
       this.lifeLabelImages[i] = game.add.sprite(xPos, yPos, 'lifeimage');
       var spin = this.lifeLabelImages[i].animations.add('spin');
@@ -825,7 +825,7 @@ Game.Play.prototype = {
     var result = false;
 
     if ((x > WIDTH - mNumber && x < WIDTH) &&
-      (y > 0 && y < mNumber)) {
+      (y > 0 && y < 80)) {
       result = true;
     }
 
