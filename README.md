@@ -8,9 +8,11 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 + [Chatchai Saratakij](https://www.facebook.com/chatchai.saratakij)
 + [Sahapat Tong-on](https://www.facebook.com/sahapat.tongon)
 
-## Game Description
-
-## Rules
+## Note & Rules
+- [Play online](http://jojoee.github.io/jam-2016/)
+- [Repository](https://github.com/jojoee/jam-2016)
+- [Game play video](https://www.youtube.com/watch?v=wUZONN4H3DI)
+- [Fanpage](https://www.facebook.com/KiKi-The-Sacrifice-469973519870300/)
 - Regenerate `totem` when we going form last floor to the first floor
 - Maximum life: 3
 - Mask
@@ -52,12 +54,10 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 2. Install global - `npm install -g bower gulp browser-sync`
 3. Install dependencies - `bower install && npm install`
 
-## Ref
+## Ref & Thank
 - [Global Game Jam](http://globalgamejam.org/)
 - [Thai Game Jam 2016](http://www.itemonline.net/ggj2016/)
 - [Rangsit University](http://globalgamejam.org/2015/jam-sites/rangsit-university)
-
-## Thank
 - [viewportsizes.com](http://viewportsizes.com/)
 - [phaser-state-transition](https://github.com/aaccurso/phaser-state-transition-plugin)
 - [Addthis](https://www.addthis.com/)
