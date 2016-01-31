@@ -456,7 +456,7 @@ Game.Play.prototype = {
     if (num > MAX_LIFE) {
       num = MAX_LIFE;
 
-    } else if (num == 0) {
+    } else if (num <= 0) {
       num = 0;
     }
 
@@ -1093,7 +1093,7 @@ Game.Play.prototype = {
     this.thePlayer.kill(); // duplicate kill
     this.fadeAllEmitters();
     this.resetCurrentMask();
-    this.updateLife(3);
+    this.updateLife(MAX_LIFE);
     this.updateScore(0);
 
     this.regenerateAllMasks();
