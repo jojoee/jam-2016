@@ -16,8 +16,6 @@ var SUBTITLE_COLOR;
 
 // white theme (white bg, font back)
 LOADING_SCREEN_COLOR = '#eee';
-TITLE_COLOR = '#545454';
-SUBTITLE_COLOR = '#65655B';
 
 TITLE_COLOR = '#fff';;
 SUBTITLE_COLOR = '#F1F1F1';
@@ -72,6 +70,40 @@ function randBetween(min, max) {
 
 Game.Boot = function(game) {};
 Game.Boot.prototype = {
+  init: function() {
+    // configures ScaleManager
+    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
+    game.scale.forceOrientation(true);
+
+    // initializes StateTransition plugin
+    game.stateTransitionExponential = game.plugins.add(Phaser.Plugin.StateTransition);
+    game.stateTransitionExponential.configure({
+      duration: Phaser.Timer.SECOND * 0.8,
+      ease: Phaser.Easing.Exponential.InOut,
+      properties: {
+        alpha: 0,
+        scale: {
+          x: 1.2,
+          y: 1.2
+        }
+      }
+    });
+
+    game.stateTransitionFade = game.plugins.add(Phaser.Plugin.StateTransition);
+    game.stateTransitionFade.configure({
+      duration: Phaser.Timer.SECOND * 0.8,
+      ease: Phaser.Easing.Linear.None,
+      properties: {
+        alpha: 0,
+        scale: {
+          x: 1.0,
+          y: 1.0
+        }
+      }
+    });
+  },
   preload: function() {
     game.stage.backgroundColor = LOADING_SCREEN_COLOR;
     game.load.image('loading', 'assets/images/loading.png');
@@ -94,7 +126,7 @@ Game.Load.prototype = {
     game.stage.backgroundColor = LOADING_SCREEN_COLOR;
   },
   setPreloadingText: function() {
-    var titleStyle = { font:'50px Arial', fill: TITLE_COLOR };
+    var titleStyle = { font:'50px Arial', fill: '#545454' };
     var title = game.add.text(
       WIDTH / 2,
       HEIGHT / 2 - 20,
@@ -102,7 +134,7 @@ Game.Load.prototype = {
       titleStyle);
     title.anchor.setTo(0.5, 1);
 
-    var subTitleTextStyle = { font:'16px Arial', fill: SUBTITLE_COLOR };
+    var subTitleTextStyle = { font:'16px Arial', fill: '#65655B' };
     var subTitle = game.add.text(
       WIDTH / 2,
       HEIGHT / 2,
@@ -120,36 +152,10 @@ Game.Load.prototype = {
     preloading.x -= preloading.width / 2;
     game.load.setPreloadSprite(preloading);
   },
-  afterVidRunFinished: function() {
-    var waitTime = 21000;
-    game.time.events.add(waitTime, this.goToMenuScreen, this);
-  },
-  goToMenuScreen: function() {
-    game.state.start('Menu');
-  },
-  setSkipButton: function() {
-    var xPos = WIDTH - 40;
-    var yPos = 40;
-
-    this.skipButton = game.add.button(xPos, yPos, 'skipbutton', this.skipIntroVid, this);
-    this.skipButton.anchor.setTo(0.5, 0.5);
-  },
-  skipIntroVid: function() {
-    game.state.start('Menu');
-  },
   preload: function() {
     this.setPreloadingBg();
     this.setPreloadingImage();
     this.setPreloadingText();
-
-    // intro vid
-    var introVid = game.add.video('introvid');
-    introVid.onPlay.addOnce(this.afterVidRunFinished, this);
-    var introVidSprite = introVid.addToWorld(game.world.centerX, game.world.centerY, 0.5, 0.5);
-    introVid.play();
-
-    // set skip button
-    this.setSkipButton();
 
     // load all asets
     game.load.spritesheet(PLAYER_SPRITE_NAME, 'assets/images/player.png', PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
@@ -185,7 +191,44 @@ Game.Load.prototype = {
     game.load.audio('item', 'assets/sounds/item.mp3');
   },
   create: function() {
-    // game.state.start('Menu');
+    game.stateTransitionExponential.to('Intro');
+  }
+};
+
+/*================================================================ INTRO
+*/
+
+Game.Intro = function(game) {};
+Game.Intro.prototype = {
+  afterVidRunFinished: function() {
+    var waitTime = 21000;
+    game.time.events.add(waitTime, this.goToMenuScreen, this);
+  },
+  goToMenuScreen: function() {
+    game.stateTransitionFade.to('Menu');
+  },
+  setSkipButton: function() {
+    var xPos = WIDTH - 40;
+    var yPos = 40;
+
+    this.skipButton = game.add.button(xPos, yPos, 'skipbutton', this.skipIntroVid, this);
+    this.skipButton.anchor.setTo(0.5, 0.5);
+  },
+  skipIntroVid: function() {
+    this.goToMenuScreen();
+  },
+  preload: function() {
+
+  },
+  create: function() {
+    // intro vid
+    var introVid = game.add.video('introvid');
+    introVid.onPlay.addOnce(this.afterVidRunFinished, this);
+    var introVidSprite = introVid.addToWorld(game.world.centerX, game.world.centerY, 0.5, 0.5);
+    introVid.play();
+
+    // set skip button
+    this.setSkipButton();
   }
 };
 
@@ -226,7 +269,7 @@ Game.Menu.prototype = {
     this.setStartButton();
   },
   startClick: function() {
-    game.state.start('Howto');
+    game.stateTransitionFade.to('Howto');
   }
 };
 
@@ -252,7 +295,7 @@ Game.Howto.prototype = {
     game.input.onDown.add(this.goToPlayState, this)
   },
   goToPlayState: function() {
-    game.state.start('Play');
+    game.stateTransitionExponential.to('Play');
   }
 };
 
@@ -1015,6 +1058,7 @@ Game.Play.prototype = {
 var game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'game-box');
 game.state.add('Boot', Game.Boot);
 game.state.add('Load', Game.Load);
+game.state.add('Intro', Game.Intro);
 game.state.add('Menu', Game.Menu);
 game.state.add('Howto', Game.Howto);
 game.state.add('Play', Game.Play);
