@@ -506,13 +506,13 @@ Game.Play.prototype = {
   setScoreLabel: function() {
     var scoreText = 'SCORE: ' + SCORE;
     var scoreStyle = { font: '16px ' + MAIN_FONT_FAMILY, fill: '#fff' };
-    this.scoreLabel = this.add.text(16, 36, scoreText, scoreStyle);
+    this.scoreLabel = this.add.text(16, 56, scoreText, scoreStyle);
     this.scoreLabel.anchor.setTo(0, 0);
   },
   setBestScoreLabel: function() {
     var bestScoreText = 'BEST: ' + SCORE;
     var bestScoreStyle = { font: '16px ' + MAIN_FONT_FAMILY, fill: '#fff' };
-    this.bestScoreLabel = this.add.text(16, 56, bestScoreText, bestScoreStyle);
+    this.bestScoreLabel = this.add.text(16, 76, bestScoreText, bestScoreStyle);
     this.bestScoreLabel.anchor.setTo(0, 0);
   },
   setLifeLabel: function() {
@@ -547,7 +547,7 @@ Game.Play.prototype = {
   setMaskLabel: function() {
     var maskText = 'MASK: ' + this.currentMask;
     var maskStyle = { font: '16px ' + MAIN_FONT_FAMILY, fill: '#fff' };
-    this.maskLabel = this.add.text(16, 64 + 12, maskText, maskStyle);
+    this.maskLabel = this.add.text(16, 36, maskText, maskStyle);
     this.maskLabel.anchor.setTo(0, 0);
   },
   setDashMask: function() {
