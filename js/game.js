@@ -76,6 +76,8 @@ Game.Boot.prototype = {
     game.stage.backgroundColor = LOADING_SCREEN_COLOR;
     game.load.image('loading', 'assets/images/loading.png');
     game.load.image('loadingborder', 'assets/images/loading-border.png');
+
+    game.load.image('skipbutton', 'assets/images/skip-button.png');
     game.load.video('introvid', 'assets/videos/intro-vid.mp4');
   },
   create: function() {
@@ -125,6 +127,16 @@ Game.Load.prototype = {
   goToMenuScreen: function() {
     game.state.start('Menu');
   },
+  setSkipButton: function() {
+    var xPos = WIDTH - 40;
+    var yPos = 40;
+
+    this.skipButton = game.add.button(xPos, yPos, 'skipbutton', this.skipIntroVid, this);
+    this.skipButton.anchor.setTo(0.5, 0.5);
+  },
+  skipIntroVid: function() {
+    game.state.start('Menu');
+  },
   preload: function() {
     this.setPreloadingBg();
     this.setPreloadingImage();
@@ -135,6 +147,9 @@ Game.Load.prototype = {
     introVid.onPlay.addOnce(this.afterVidRunFinished, this);
     var introVidSprite = introVid.addToWorld(game.world.centerX, game.world.centerY, 0.5, 0.5);
     introVid.play();
+
+    // set skip button
+    this.setSkipButton();
 
     // load all asets
     game.load.spritesheet(PLAYER_SPRITE_NAME, 'assets/images/player.png', PLAYER_SPRITE_WIDTH, PLAYER_SPRITE_HEIGHT);
