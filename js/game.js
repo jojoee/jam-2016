@@ -91,9 +91,35 @@ Game.Boot.prototype = {
       }
     });
 
+    game.stateTransitionFastExponential = game.plugins.add(Phaser.Plugin.StateTransition);
+    game.stateTransitionFastExponential.configure({
+      duration: Phaser.Timer.SECOND * 0.4,
+      ease: Phaser.Easing.Exponential.InOut,
+      properties: {
+        alpha: 0,
+        scale: {
+          x: 1.2,
+          y: 1.2
+        }
+      }
+    });
+
     game.stateTransitionFade = game.plugins.add(Phaser.Plugin.StateTransition);
     game.stateTransitionFade.configure({
       duration: Phaser.Timer.SECOND * 0.8,
+      ease: Phaser.Easing.Linear.None,
+      properties: {
+        alpha: 0,
+        scale: {
+          x: 1.0,
+          y: 1.0
+        }
+      }
+    });
+
+    game.stateTransitionFastFade = game.plugins.add(Phaser.Plugin.StateTransition);
+    game.stateTransitionFastFade.configure({
+      duration: Phaser.Timer.SECOND * 0.4,
       ease: Phaser.Easing.Linear.None,
       properties: {
         alpha: 0,
@@ -334,7 +360,7 @@ Game.Howto.prototype = {
       game.state.start(stateName);
 
     } else {
-      game.stateTransitionExponential.to(stateName);
+      game.stateTransitionFastExponential.to(stateName);
     }
   }
 };
