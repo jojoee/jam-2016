@@ -26,6 +26,9 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 - [x] Add state transition
 - [ ] Double jump mask
 - [ ] Scoreboard
+- [x] Decrease fade effect time on `howto` state
+- [x] Change life label from `number` to `image`
+- [ ] Change current mask label from `text` to `image`
 
 ## Controls
 
@@ -49,3 +52,6 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 - [phaser-screen-shake](https://github.com/dmaslov/phaser-screen-shake)
 - [Phaser Debug](https://github.com/englercj/phaser-debug)
 - [Favicon Generator](http://realfavicongenerator.net/)
+- [W3C - Markup Validation Service](https://validator.w3.org/)
+- Sound: [lessmilk.com](http://www.lessmilk.com/), [super-coin-box](https://github.com/dmaslov/super-coin-box)
+- Font: [Permanent Marker](https://www.google.com/fonts/specimen/Permanent+Marker)
