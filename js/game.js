@@ -191,7 +191,14 @@ Game.Load.prototype = {
     game.load.audio('item', 'assets/sounds/item.mp3');
   },
   create: function() {
-    game.stateTransitionExponential.to('Intro');
+    var stateName = 'Intro';
+
+    if (IS_DEBUG) {
+      game.state.start(stateName);
+
+    } else {
+      game.stateTransitionExponential.to(stateName);
+    }
   }
 };
 
@@ -205,7 +212,14 @@ Game.Intro.prototype = {
     game.time.events.add(waitTime, this.goToMenuScreen, this);
   },
   goToMenuScreen: function() {
-    game.stateTransitionFade.to('Menu');
+    var stateName = 'Menu';
+
+    if (IS_DEBUG) {
+      game.state.start(stateName);
+
+    } else {
+      game.stateTransitionFade.to(stateName);
+    }
   },
   setSkipButton: function() {
     var xPos = WIDTH - 40;
@@ -269,7 +283,14 @@ Game.Menu.prototype = {
     this.setStartButton();
   },
   startClick: function() {
-    game.stateTransitionFade.to('Howto');
+    var stateName = 'Howto';
+
+    if (IS_DEBUG) {
+      game.state.start(stateName);
+
+    } else {
+      game.stateTransitionFade.to(stateName);
+    }
   }
 };
 
@@ -295,7 +316,14 @@ Game.Howto.prototype = {
     game.input.onDown.add(this.goToPlayState, this)
   },
   goToPlayState: function() {
-    game.stateTransitionExponential.to('Play');
+    var stateName = 'Play';
+
+    if (IS_DEBUG) {
+      game.state.start(stateName);
+
+    } else {
+      game.stateTransitionExponential.to(stateName);
+    }
   }
 };
 
@@ -304,6 +332,11 @@ Game.Howto.prototype = {
 
 Game.Play = function(game) {};
 Game.Play.prototype = {
+  init: function() {
+    if (IS_DEBUG) {
+      game.add.plugin(Phaser.Plugin.Debug);
+    }
+  },
   echoDebug: function(txt, val) {
     game.debug.text(txt + ': ' + val, DEBUG_XPOS, DEBUG_YPOS += 20);
   },
@@ -660,8 +693,8 @@ Game.Play.prototype = {
   },
   render: function() {
     if (IS_DEBUG) {
-      game.debug.spriteInfo(this.thePlayer, 8, 16);
-      game.debug.bodyInfo(this.thePlayer, 8, 106);
+      game.debug.spriteInfo(this.thePlayer, 8, 186);
+      game.debug.bodyInfo(this.thePlayer, 8, 306);
       game.debug.body(this.thePlayer);
 
       DEBUG_XPOS = STARTED_DEBUG_XPOS;
