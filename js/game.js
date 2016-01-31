@@ -460,7 +460,7 @@ Game.Play.prototype = {
 
     for (var i = 0; i < MAX_LIFE; i++) {
       var lifeAlpha = (i < LIFE) ? 1 : 0;
-      this.lifeImages[i].alpha = lifeAlpha;
+      this.lifeLabelImages[i].alpha = lifeAlpha;
     };
   },
   updateMask: function(str) {
@@ -502,13 +502,13 @@ Game.Play.prototype = {
   setScoreLabel: function() {
     var scoreText = 'SCORE: ' + SCORE;
     var scoreStyle = { font: '16px Arial', fill: '#fff' };
-    this.scoreLabel = this.add.text(16, 16, scoreText, scoreStyle);
+    this.scoreLabel = this.add.text(16, 36, scoreText, scoreStyle);
     this.scoreLabel.anchor.setTo(0, 0);
   },
   setBestScoreLabel: function() {
     var bestScoreText = 'BEST: ' + SCORE;
     var bestScoreStyle = { font: '16px Arial', fill: '#fff' };
-    this.bestScoreLabel = this.add.text(16, 32 + 4, bestScoreText, bestScoreStyle);
+    this.bestScoreLabel = this.add.text(16, 56, bestScoreText, bestScoreStyle);
     this.bestScoreLabel.anchor.setTo(0, 0);
   },
   setLifeLabel: function() {
@@ -517,24 +517,24 @@ Game.Play.prototype = {
     // lifeText = 'LIFE: ' + LIFE;
     lifeText = 'LIFE:';
     var lifeStyle = { font: '16px Arial', fill: '#fff' };
-    this.lifeLabel = this.add.text(16, 56, lifeText, lifeStyle);
+    this.lifeLabel = this.add.text(16, 16, lifeText, lifeStyle);
     this.lifeLabel.anchor.setTo(0, 0);
 
     // life label `life` images
-    this.lifeImageGroup;
-    this.lifeImageGroup = game.add.group();
-    this.lifeImages = [];
+    this.lifeLabelImageGroup;
+    this.lifeLabelImageGroup = game.add.group();
+    this.lifeLabelImages = [];
 
     for (var i = 0; i < MAX_LIFE; i += 1) {
       var xPos = 62 + 20 * i;
-      var yPos = 66;
+      var yPos = 26;
 
-      this.lifeImages[i] = game.add.sprite(xPos, yPos, 'lifeimage');
-      var spin = this.lifeImages[i].animations.add('spin');
-      this.lifeImages[i].animations.play('spin', 6, true);
-      this.lifeImages[i].anchor.setTo(0.5, 0.5);
-      this.lifeImageGroup.add(this.lifeImages[i]);
-      this.lifeImages[i].alpha = 1;
+      this.lifeLabelImages[i] = game.add.sprite(xPos, yPos, 'lifeimage');
+      var spin = this.lifeLabelImages[i].animations.add('spin');
+      this.lifeLabelImages[i].animations.play('spin', 6, true);
+      this.lifeLabelImages[i].anchor.setTo(0.5, 0.5);
+      this.lifeLabelImageGroup.add(this.lifeLabelImages[i]);
+      this.lifeLabelImages[i].alpha = 1;
     }
   },
   clearGameOverLabel: function() {
