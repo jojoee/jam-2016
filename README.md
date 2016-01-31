@@ -25,6 +25,7 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 - [x] Add video intro
 - [x] Add state transition
 - [ ] Double jump mask
+- [ ] Scoreboard
 
 ## Controls
 
@@ -42,3 +43,9 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 
 ## Thank
 - [viewportsizes.com](http://viewportsizes.com/)
+- [phaser-state-transition](https://github.com/aaccurso/phaser-state-transition-plugin)
+- [Addthis](https://www.addthis.com/)
+- [Phaser](http://phaser.io/)
+- [phaser-screen-shake](https://github.com/dmaslov/phaser-screen-shake)
+- [Phaser Debug](https://github.com/englercj/phaser-debug)
+- [Favicon Generator](http://realfavicongenerator.net/)
