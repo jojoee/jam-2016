@@ -13,6 +13,7 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 - [Repository](https://github.com/jojoee/jam-2016)
 - [Game play video](https://www.youtube.com/watch?v=wUZONN4H3DI)
 - [Fanpage](https://www.facebook.com/KiKi-The-Sacrifice-469973519870300/)
+- [Global Game Jam 2016 Page](http://globalgamejam.org/2016/games/kiki-sacrifice)
 - Regenerate `totem` when we going form last floor to the first floor
 - Maximum life: 3
 - Mask
