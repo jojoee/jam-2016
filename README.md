@@ -1,6 +1,10 @@
 # jam-2016
 KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 
+[![KiKi - Intro Screenshot](https://raw.githubusercontent.com/jojoee/jam-2016/gh-pages/screenshots/intro.png "KiKi - Intro screenshot")](http://jojoee.github.io/jam-2016/)
+
+[![KiKi - Pause Screenshot](https://raw.githubusercontent.com/jojoee/jam-2016/gh-pages/screenshots/pause.png "KiKi - Pause Screenshot")](http://jojoee.github.io/jam-2016/)
+
 ## Our Team
 + J - [Jirashy G. Kongjinda](https://www.facebook.com/LAWGGEVOL) / [Joe Nathachai Thongniran](https://www.facebook.com/joenathachai.thongniran)
 + A - [Anisa Jaiteam](https://www.facebook.com/anisa.jaiteam)
