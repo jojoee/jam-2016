@@ -9,8 +9,8 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 + [Anisa Jaiteam](https://www.facebook.com/anisa.jaiteam)
 + [Chatchai Saratakij](https://www.facebook.com/chatchai.saratakij)
 + [Jirashy G. Kongjinda](https://www.facebook.com/LAWGGEVOL)
-+ [Joe Nathachai Thongniran](https://www.facebook.com/joenathachai.thongniran)
 + [Munchupa Lerkprasertkul](https://www.facebook.com/yuyu.lovemom)
++ [Nathachai Thongniran](https://www.facebook.com/joenathachai.thongniran)
 + [Sahapat Tong-on](https://www.facebook.com/sahapat.tongon)
 
 ## Note & Rules
