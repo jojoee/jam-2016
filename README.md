@@ -3,7 +3,7 @@ KiKi - The Sacrifice on Global Game Jam 2016 (29-31 Jan 2016)
 
 [![KiKi - Intro Screenshot](https://raw.githubusercontent.com/jojoee/jam-2016/gh-pages/screenshots/intro.png "KiKi - Intro screenshot")](http://jojoee.github.io/jam-2016/)
 
-[![KiKi - Pause Screenshot](https://raw.githubusercontent.com/jojoee/jam-2016/gh-pages/screenshots/pause.png "KiKi - Pause Screenshot")](http://jojoee.github.io/jam-2016/)
+[![KiKi - Pause Screenshot](https://raw.githubusercontent.com/jojoee/jam-2016/gh-pages/screenshots/pause.png "KiKi - Pause Screenshot")](http://jojoee.github.io/jam-2016/) [![Greenkeeper badge](https://badges.greenkeeper.io/jojoee/jam-2016.svg)](https://greenkeeper.io/)
 
 ## Our Team (alphabetical)
 + [Anisa Jaiteam](https://www.facebook.com/anisa.jaiteam)
